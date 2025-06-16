@@ -1,70 +1,53 @@
-# GitHub Codespaces ♥️ React
+# Project Management Simulation with Active Inference
 
-Welcome to your shiny new Codespace running React! We've got everything fired up and running for you to explore React.
+This project is an interactive demo of how Active Inference principles can guide project management decisions. It is built with **React** and **Vite** and visualizes estimations, progress and resource allocation using [Recharts](https://recharts.org/).
 
-You've got a blank canvas to work on from a git perspective as well. There's a single initial commit with the what you're seeing right now - where you go from here is up to you!
+## Getting Started
 
-Everything you do here is contained within this one codespace. There is no repository on GitHub yet. If and when you’re ready you can click "Publish Branch" and we’ll create your repository and push up your project. If you were just exploring then and have no further need for this code then you can simply delete your codespace and it's gone forever.
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+2. **Start the development server**
+   ```bash
+   npm start
+   ```
+   The app will be available at [http://localhost:3000](http://localhost:3000). The page reloads automatically when files change.
 
-This project was bootstrapped for you with [Vite](https://vitejs.dev/).
+3. **Run tests**
+   ```bash
+   npm test
+   ```
+   This launches [Vitest](https://vitest.dev/) in watch mode. Press `q` to quit the test runner.
 
-## Available Scripts
+4. **Create a production build**
+   ```bash
+   npm run build
+   ```
+   The optimized output is written to the `docs` folder. This folder is configured for deployment to GitHub Pages.
 
-In the project directory, you can run:
+5. **Preview the production build locally**
+   ```bash
+   npm run preview
+   ```
 
-### `npm start`
+## Project Structure
 
-We've already run this for you in the `Codespaces: server` terminal window below. If you need to stop the server for any reason you can just run `npm start` again to bring it back online.
+- `src/App.tsx` – main simulation component with minimal UI helpers.
+- `src/App.test.tsx` – example unit test using Vitest and React Testing Library.
+- `public/` – static assets and `index.html` template.
+- `vite.config.js` – Vite configuration. When `NODE_ENV` is `production`, the base path is set for GitHub Pages (`/React_proj-apps/`).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000/](http://localhost:3000/) in the built-in Simple Browser (`Cmd/Ctrl + Shift + P > Simple Browser: Show`) to view your running application.
+## Deployment
 
-The page will reload automatically when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+A workflow in `.github/workflows/deploy.yml` builds the project and publishes the contents of the `docs` directory whenever changes land on the `main` branch. You can run the same build locally with `npm run build` and open `docs/index.html` to verify the result.
 
 ## Learn More
 
-You can learn more in the [Vite documentation](https://vitejs.dev/guide/).
+- [Vite documentation](https://vitejs.dev/guide/)
+- [Vitest documentation](https://vitest.dev/guide/)
+- [React documentation](https://reactjs.org/)
 
-To learn Vitest, a Vite-native testing framework, go to [Vitest documentation](https://vitest.dev/guide/)
+## License
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://sambitsahoo.com/blog/vite-code-splitting-that-works.html](https://sambitsahoo.com/blog/vite-code-splitting-that-works.html)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://github.com/btd/rollup-plugin-visualizer#rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer#rollup-plugin-visualizer)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://dev.to/hamdankhan364/simplifying-progressive-web-app-pwa-development-with-vite-a-beginners-guide-38cf](https://dev.to/hamdankhan364/simplifying-progressive-web-app-pwa-development-with-vite-a-beginners-guide-38cf)
-
-### Advanced Configuration
-
-This section has moved here: [https://vitejs.dev/guide/build.html#advanced-base-options](https://vitejs.dev/guide/build.html#advanced-base-options)
-
-### Deployment
-
-This project is preconfigured for GitHub Pages. The workflow in `.github/workflows/deploy.yml` builds the app and deploys the `docs` folder whenever changes land on `main`. To test locally run `npm run build` and open `docs/index.html`.
-
-### Troubleshooting
-
-This section has moved here: [https://vitejs.dev/guide/troubleshooting.html](https://vitejs.dev/guide/troubleshooting.html)
+This project is licensed under the [MIT License](LICENSE).
