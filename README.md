@@ -63,7 +63,7 @@ This section has moved here: [https://vitejs.dev/guide/build.html#advanced-base-
 
 ### Deployment
 
-This section has moved here: [https://vitejs.dev/guide/build.html](https://vitejs.dev/guide/build.html)
+This project is preconfigured for GitHub Pages. The workflow in `.github/workflows/deploy.yml` builds the app and deploys the `docs` folder whenever changes land on `main`. To test locally run `npm run build` and open `docs/index.html`.
 
 ### Troubleshooting
 
