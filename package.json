@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "BROWSER=none WDS_SOCKET_PORT=0 vite --port 3000",
-    "build": "APP=project-management-simulation vite build && APP=project-dynamics-simulator vite build && cp index.html docs/index.html && cp app-index.csv docs/app-index.csv && cp -r pics docs/pics",
+    "build": "node scripts/build-all.js",
     "preview": "vite preview",
     "test": "vitest"
   },
