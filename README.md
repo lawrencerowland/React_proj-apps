@@ -1,6 +1,6 @@
-# Project Management Simulation with Active Inference
+# Project Apps
 
-This project is an interactive demo of how Active Inference principles can guide project management decisions. It is built with **React** and **Vite** and visualizes estimations, progress and resource allocation using [Recharts](https://recharts.org/).
+This repository hosts a collection of small React applications. The main example is a **Project Management Simulation** implementing Active Inference principles. A second app, **Project Dynamics Simulator**, explores feedback loops in projects. All apps are built with **Vite** and use [Recharts](https://recharts.org/) for charts.
 
 ## Getting Started
 
@@ -12,7 +12,12 @@ This project is an interactive demo of how Active Inference principles can guide
    ```bash
    npm start
    ```
-   The app will be available at [http://localhost:3000](http://localhost:3000). The page reloads automatically when files change.
+   By default this serves the Project Management Simulation at [http://localhost:3000](http://localhost:3000).
+   To work on the Project Dynamics Simulator run:
+   ```bash
+   APP=project-dynamics-simulator npm start
+   ```
+   The page reloads automatically when files change.
 
 3. **Run tests**
    ```bash
@@ -24,11 +29,15 @@ This project is an interactive demo of how Active Inference principles can guide
    ```bash
    npm run build
    ```
-   The optimized output is written to `docs/apps/project-management-simulation`. This folder is configured for deployment to GitHub Pages.
+   This builds **both** applications and writes the output under `docs/apps/`. The folder is configured for deployment to GitHub Pages.
 
 5. **Preview the production build locally**
    ```bash
    npm run preview
+   ```
+   Pass `APP=<app-name>` to preview a specific build, e.g.
+   ```bash
+   APP=project-dynamics-simulator npm run preview
    ```
 
 ## Project Structure

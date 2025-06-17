@@ -6,14 +6,16 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // https://vitejs.dev/config/
+const appName = process.env.APP || 'project-management-simulation';
+
 export default defineConfig({
-  root: resolve(__dirname, 'apps/project-management-simulation'),
+  root: resolve(__dirname, `apps/${appName}`),
   base:
     process.env.NODE_ENV === 'production'
-      ? '/React_proj-apps/apps/project-management-simulation/'
+      ? `/React_proj-apps/apps/${appName}/`
       : '/',
   build: {
-    outDir: resolve(__dirname, 'docs/apps/project-management-simulation'),
+    outDir: resolve(__dirname, `docs/apps/${appName}`),
   },
   plugins: [react()],
   test: {
