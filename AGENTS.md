@@ -1,8 +1,8 @@
 # Project Apps Repository
 
-This repository hosts a set of React applications built with Vite. The primary application at the moment is a **Project Management Simulation** demonstrating Friston's Active Inference principles applied to project planning.
+This repository hosts a growing collection of React applications built with Vite. The first app was a **Project Management Simulation** demonstrating Active Inference principles. A second app explores project dynamics. More apps may be added over time.
 
-## Current Application: Project Management Simulation
+## Application: Project Management Simulation
 
 ### Overview
 - Located in `apps/project-management-simulation/src/App.tsx` and bootstrapped by `apps/project-management-simulation/src/index.jsx`.
@@ -25,9 +25,9 @@ This repository hosts a set of React applications built with Vite. The primary a
 - Toggle display of Active Inference insights.
 
 ### Running and Testing
-- `npm start` launches a development server on port `3000`.
+- `npm start` launches a development server on port `3000`. Set `APP=<app-name>` to work on a different app.
 - `npm test` runs the Vitest test suite (see `apps/project-management-simulation/src/App.test.tsx`).
-- Production builds output to the `docs/apps/project-management-simulation` directory (`vite.config.js`).
+- `npm run build` executes `scripts/build-all.js` which builds every app under `apps/` and outputs them to `docs/apps/<app-name>`.
 
 ## Application: Project Dynamics Simulator
 
@@ -36,7 +36,7 @@ This second app explores reinforcing and balancing feedback loops in a project e
 - Located in `apps/project-dynamics-simulator/src/App.tsx` and bootstrapped by `apps/project-dynamics-simulator/src/index.jsx`.
 - Visualises progress, scope, quality, morale and other metrics with **Recharts**.
 - Toggle effects like technical debt, team learning and user feedback to see non-linear project behaviour.
-- To develop this app locally, temporarily set `root` in `vite.config.js` to `apps/project-dynamics-simulator` before running `npm start`.
+To work on this app locally run `APP=project-dynamics-simulator npm start`.
 
 ## Future Applications
 This repository is intended to host multiple project-oriented apps. Each app should live in `apps/<app-name>` with its own `src` folder and `index.html`. Shared utilities such as `index.css`, `reportWebVitals.js` and test setup files belong in `src/common` so they can be imported across apps. Application-specific components and styles should remain under their respective app directory. The root `index.html` displays a card index of all available apps using `app-index.csv` and screenshots stored in `pics/`.

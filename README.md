@@ -29,7 +29,8 @@ This repository hosts a collection of small React applications. The main example
    ```bash
    npm run build
    ```
-   This builds **both** applications and writes the output under `docs/apps/`. The folder is configured for deployment to GitHub Pages.
+   The build script automatically iterates over every folder in `apps/` and writes the optimized output under `docs/apps/<app-name>`.
+   The folder is configured for deployment to GitHub Pages.
 
 5. **Preview the production build locally**
    ```bash
@@ -42,14 +43,14 @@ This repository hosts a collection of small React applications. The main example
 
 ## Project Structure
 
-- `src/App.tsx` – main simulation component with minimal UI helpers.
-- `src/App.test.tsx` – example unit test using Vitest and React Testing Library.
-- `public/` – static assets and `index.html` template.
-- `vite.config.js` – Vite configuration. When `NODE_ENV` is `production`, the base path is set for GitHub Pages (`/React_proj-apps/`).
+- `apps/<app-name>/` – individual applications. Each folder contains its own `src` and `index.html`.
+- `src/common/` – shared utilities like `index.css`, `reportWebVitals.js` and test setup.
+- `vite.config.js` – uses the `APP` environment variable to select which app to serve or build.
+- `scripts/build-all.js` – helper script run by `npm run build` to build every app found in `apps/`.
 
 ## Deployment
 
-A workflow in `.github/workflows/deploy.yml` builds the project and publishes the contents of the `docs` directory whenever changes land on the `main` branch. You can run the same build locally with `npm run build` and open `docs/apps/project-management-simulation/index.html` to verify the result.
+A workflow in `.github/workflows/deploy.yml` builds the project and publishes the contents of the `docs` directory whenever changes land on the `main` branch. You can run the same build locally with `npm run build` and open `docs/index.html` to verify the generated app list.
 
 ## Learn More
 
