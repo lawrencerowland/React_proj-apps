@@ -1,3 +1,8 @@
+import React from "react";
+import * as Recharts from "recharts";
+(globalThis as any).React = React;
+(globalThis as any).Recharts = Recharts;
+
 const { useState, useEffect, useRef } = React;
 const {
   BarChart,
@@ -571,4 +576,6 @@ const ProjectDynamicsSimulator = () => {
     </div>
   );
 };
+
+export default ProjectDynamicsSimulator;
 
