@@ -29,6 +29,15 @@ This repository hosts a set of React applications built with Vite. The primary a
 - `npm test` runs the Vitest test suite (see `apps/project-management-simulation/src/App.test.tsx`).
 - Production builds output to the `docs/apps/project-management-simulation` directory (`vite.config.js`).
 
+## Application: Project Dynamics Simulator
+
+This second app explores reinforcing and balancing feedback loops in a project environment.
+
+- Located in `apps/project-dynamics-simulator/src/App.tsx` and bootstrapped by `apps/project-dynamics-simulator/src/index.jsx`.
+- Visualises progress, scope, quality, morale and other metrics with **Recharts**.
+- Toggle effects like technical debt, team learning and user feedback to see non-linear project behaviour.
+- To develop this app locally, temporarily set `root` in `vite.config.js` to `apps/project-dynamics-simulator` before running `npm start`.
+
 ## Future Applications
 This repository is intended to host multiple project-oriented apps. Each app should live in `apps/<app-name>` with its own `src` folder and `index.html`. Shared utilities such as `index.css`, `reportWebVitals.js` and test setup files belong in `src/common` so they can be imported across apps. Application-specific components and styles should remain under their respective app directory. The root `index.html` displays a card index of all available apps using `app-index.csv` and screenshots stored in `pics/`.
 
