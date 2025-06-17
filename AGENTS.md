@@ -34,3 +34,5 @@ This repository is intended to host multiple project-oriented apps. Each app sho
 
 Each row of `app-index.csv` includes a `#` column. The number in this column corresponds to an image file named `pics/<number>.png`. When adding new apps, provide a screenshot with this lowercase `.png` naming so the index page can load it automatically. Update this document to describe each new application and how to run it.
 
+**Navigation**: Every app should offer a link back to the card index so users can return easily. Add `<a href="../../index.html">Back to app index</a>` somewhere in each application's `index.html`.
+
