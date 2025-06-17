@@ -52,6 +52,32 @@ This repository hosts a collection of small React applications. The main example
 
 A workflow in `.github/workflows/deploy.yml` builds the project and publishes the contents of the `docs` directory whenever changes land on the `main` branch. You can run the same build locally with `npm run build` and open `docs/index.html` to verify the generated app list.
 
+## To add a new React app (from a TSX/JSX file) into the repository:
+
+1. Create the new app folder
+
+2. Place it under apps/<app-name>/ with its own src directory and index.html. Shared utilities live in src/common/ so import those in your new src/index.jsx or tsx. 
+
+3. Include a link back to the app index (<a href="../../index.html">Back to app index</a>) in the HTML as noted in AGENTS.md. 
+
+4. Add a screenshot and CSV entry
+
+5. Pick the next numeric ID and save a screenshot as pics/<number>.png.
+
+6. Add a corresponding row to app-index.csv, filling out the name, description, and other fields. AGENTS.md explains how each CSV # value matches a screenshot. 
+
+7. Run and test locally
+
+-  Serve the new app with APP=<app-name> npm start. This is how you switch between apps during development. 
+-   Execute npm test to run Vitest-based tests. 
+
+8. Build all apps
+
+- When ready, run npm run build. The scripts/build-all.js script automatically iterates over every folder in apps/ and outputs optimized builds to docs/apps/<app-name>. 
+
+- Preview a specific build (optional). Use APP=<app-name> npm run preview to check an individual build locally. 
+
+Following these steps will integrate your new TSX/JSX app alongside the existing ones, update the index page, and ensure the build process handles it automatically.
 ## Learn More
 
 - [Vite documentation](https://vitejs.dev/guide/)
