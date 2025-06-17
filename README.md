@@ -24,7 +24,7 @@ This project is an interactive demo of how Active Inference principles can guide
    ```bash
    npm run build
    ```
-   The optimized output is written to the `docs` folder. This folder is configured for deployment to GitHub Pages.
+   The optimized output is written to `docs/apps/project-management-simulation`. This folder is configured for deployment to GitHub Pages.
 
 5. **Preview the production build locally**
    ```bash
@@ -40,7 +40,7 @@ This project is an interactive demo of how Active Inference principles can guide
 
 ## Deployment
 
-A workflow in `.github/workflows/deploy.yml` builds the project and publishes the contents of the `docs` directory whenever changes land on the `main` branch. You can run the same build locally with `npm run build` and open `docs/index.html` to verify the result.
+A workflow in `.github/workflows/deploy.yml` builds the project and publishes the contents of the `docs` directory whenever changes land on the `main` branch. You can run the same build locally with `npm run build` and open `docs/apps/project-management-simulation/index.html` to verify the result.
 
 ## Learn More
 
