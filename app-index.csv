@@ -1,4 +1,4 @@
-﻿#,name,description,origin,model,tags,explainer post,notes
+#,name,description,origin,model,tags,explainer post,notes
 1,project-management-simulation,applying Friston's active inference to a project scenario,Claude,Cant remember,"active_inference, generative_model, prediction_error, surprise",,
 2,project-dynamics-simulator,introduce non-linear relationships into a project model which affect teams and performance,Claude,Cant remember,"gamification, feedback_loops, non_linearity, behaviour, learning,",,"Real projects are not just made up of task nodes connected by dependency edges. There are regular circles of daily activites, monthly progress review actions etc. There is negative feedback pushing back on attempted initaitives. there are positive reinforcing loops initiated sometimes after the first or second task has been done"
 3,IT-project-seq-decisions,Applies Powell's sequential decision making framework to an IT project,cant remember,Cant remember,"decision, uncertainty",,
