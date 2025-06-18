@@ -41,7 +41,7 @@ To work on this app locally run `APP=project-dynamics-simulator npm start`.
 ## Future Applications
 This repository is intended to host multiple project-oriented apps. Each app should live in `apps/<app-name>` with its own `src` folder and `index.html`. Shared utilities such as `index.css`, `reportWebVitals.js` and test setup files belong in `src/common` so they can be imported across apps. Application-specific components and styles should remain under their respective app directory. The root `index.html` displays a card index of all available apps using `app-index.csv` and screenshots stored in `pics/`.
 
-Each row of `app-index.csv` includes a `#` column. The number in this column corresponds to an image file named `pics/<number>.png`. When adding new apps, provide a screenshot with this lowercase `.png` naming so the index page can load it automatically. Update this document to describe each new application and how to run it.
+Each row of `app-index.csv` includes a `#` column. The number in this column corresponds to an image file named `pics/<number>.png`. When adding new apps, provide a screenshot with this lowercase `.png` naming so the index page can load it automatically. Missing images fall back to `pics/blank.png`. Update this document to describe each new application and how to run it.
 
 **Navigation**: Every app should offer a link back to the card index so users can return easily. Add `<a href="../../index.html">Back to app index</a>` somewhere in each application's `index.html`.
 

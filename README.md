@@ -76,7 +76,8 @@ A workflow in `.github/workflows/deploy.yml` builds the project and publishes th
 
 4. Add a screenshot and CSV entry
 
-5. Pick the next numeric ID and save a screenshot as pics/<number>.png.
+5. Pick the next numeric ID and save a screenshot as `pics/<number>.png`. If the
+   image is missing the index automatically loads `pics/blank.png` instead.
 
 6. Add a corresponding row to app-index.csv, filling out the name, description, and other fields. AGENTS.md explains how each CSV # value matches a screenshot. 
 
