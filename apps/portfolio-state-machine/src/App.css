@@ -1,0 +1,22 @@
+.app-container {
+  font-family: sans-serif;
+  padding: 1rem;
+}
+
+.button-group button {
+  margin-right: 0.5rem;
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+.left-panel,
+.right-panel {
+  flex: 1;
+}
+
+.simulate-button {
+  margin-top: 1rem;
+}
