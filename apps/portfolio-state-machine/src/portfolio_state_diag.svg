@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <!-- States -->
+  <circle cx="100" cy="250" r="50" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+  <text x="100" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">IDEA</text>
+  
+  <circle cx="300" cy="250" r="50" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+  <text x="300" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">PROPOSAL</text>
+  
+  <circle cx="500" cy="250" r="50" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+  <text x="500" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">APPROVED</text>
+  
+  <circle cx="700" cy="250" r="50" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+  <text x="700" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">IN PROGRESS</text>
+  
+  <circle cx="500" cy="450" r="50" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+  <text x="500" y="455" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">COMPLETED</text>
+  
+  <circle cx="300" cy="450" r="50" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+  <text x="300" y="455" text-anchor="middle" font-family="Arial, sans-serif" font-size="14">CANCELLED</text>
+
+  <!-- Transitions -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+  
+  <!-- IDEA to PROPOSAL -->
+  <line x1="150" y1="250" x2="250" y2="250" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="200" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.7</text>
+  
+  <!-- PROPOSAL to APPROVED -->
+  <line x1="350" y1="250" x2="450" y2="250" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="400" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.6</text>
+  
+  <!-- APPROVED to IN PROGRESS -->
+  <line x1="550" y1="250" x2="650" y2="250" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="600" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.9</text>
+  
+  <!-- IN PROGRESS to COMPLETED -->
+  <path d="M 700 300 Q 700 450 550 450" fill="none" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="650" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.8</text>
+  
+  <!-- Transitions to CANCELLED -->
+  <path d="M 100 300 Q 100 450 250 450" fill="none" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="150" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.3</text>
+  
+  <line x1="300" y1="300" x2="300" y2="400" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="320" y="375" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.4</text>
+  
+  <path d="M 500 300 Q 500 375 350 450" fill="none" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="450" y="375" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.1</text>
+  
+  <path d="M 700 300 Q 700 375 350 450" fill="none" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="600" y="375" text-anchor="middle" font-family="Arial, sans-serif" font-size="12">0.2</text>
+</svg>
