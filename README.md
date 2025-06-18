@@ -64,9 +64,15 @@ A workflow in `.github/workflows/deploy.yml` builds the project and publishes th
 
 1. Create the new app folder
 
-2. Place it under apps/<app-name>/ with its own src directory and index.html. Shared utilities live in src/common/ so import those in your new src/index.jsx or tsx. 
+2. Place it under apps/<app-name>/ with its own src directory and index.html. Shared utilities live in src/common/ so import those in your new src/index.jsx or tsx. Use the snippet below as a starting point for your `index.html` so the app mounts correctly and links back to the index.
 
-3. Include a link back to the app index (<a href="../../index.html">Back to app index</a>) in the HTML as noted in AGENTS.md. 
+```html
+<!-- index.html snippet -->
+<div id="root"></div>
+<p><a href="../../index.html">Back to app index</a></p>
+```
+
+3. Include a link back to the app index (<a href="../../index.html">Back to app index</a>) in the HTML as shown above and noted in AGENTS.md.
 
 4. Add a screenshot and CSV entry
 
