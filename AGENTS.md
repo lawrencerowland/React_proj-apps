@@ -45,3 +45,8 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 
 **Navigation**: Every app should offer a link back to the card index so users can return easily. Add `<a href="../../index.html">Back to app index</a>` somewhere in each application's `index.html`.
 
+### IT Project Sequential Decisions
+- Located in `apps/IT-project-seq-decisions/src/App.jsx` and bootstrapped by `apps/IT-project-seq-decisions/src/index.jsx`.
+- Demonstrates sequential decision making for IT projects, guiding the user through narrative, modelling and policy steps.
+- Run locally with `APP=IT-project-seq-decisions npm start`.
+
