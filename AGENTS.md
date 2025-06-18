@@ -49,4 +49,8 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 - Located in `apps/IT-project-seq-decisions/src/App.jsx` and bootstrapped by `apps/IT-project-seq-decisions/src/index.jsx`.
 - Demonstrates sequential decision making for IT projects, guiding the user through narrative, modelling and policy steps.
 - Run locally with `APP=IT-project-seq-decisions npm start`.
+### Portfolio State Machine
+- Located in `apps/portfolio-state-machine/src/App.jsx` and bootstrapped by `apps/portfolio-state-machine/src/index.jsx`.
+- Manages a portfolio of projects using a state machine and includes a simulation mode.
+- Run locally with `APP=portfolio-state-machine npm start`.
 

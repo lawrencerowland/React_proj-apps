@@ -1,6 +1,6 @@
 # Project Apps
 
-This repository hosts a collection of small React applications. The main example is a **Project Management Simulation** implementing Active Inference principles. A second app, **Project Dynamics Simulator**, explores feedback loops in projects. A third app, **IT Project Sequential Decisions**, demonstrates sequential decision making for IT projects. All apps are built with **Vite** and use [Recharts](https://recharts.org/) for charts.
+This repository hosts a collection of small React applications. The main example is a **Project Management Simulation** implementing Active Inference principles. A second app, **Project Dynamics Simulator**, explores feedback loops in projects. A third app, **IT Project Sequential Decisions**, demonstrates sequential decision making for IT projects. A fourth app, **Portfolio State Machine**, models project portfolios using a state machine. All apps are built with **Vite** and use [Recharts](https://recharts.org/) for charts.
 
 ## Getting Started
 
@@ -20,6 +20,10 @@ This repository hosts a collection of small React applications. The main example
   To work on the IT Project Sequential Decisions app run:
   ```bash
   APP=IT-project-seq-decisions npm start
+  ```
+  To work on the Portfolio State Machine app run:
+  ```bash
+  APP=portfolio-state-machine npm start
   ```
   The page reloads automatically when files change.
 
@@ -47,6 +51,10 @@ This repository hosts a collection of small React applications. The main example
   Preview the IT Project Sequential Decisions app with:
   ```bash
   APP=IT-project-seq-decisions npm run preview
+  ```
+  Preview the Portfolio State Machine app with:
+  ```bash
+  APP=portfolio-state-machine npm run preview
   ```
 
 ## Project Structure
