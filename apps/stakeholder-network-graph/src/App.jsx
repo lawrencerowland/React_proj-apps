@@ -1,5 +1,5 @@
 import React from 'react';
-import ForceGraph2D from 'react-force-graph';
+import { ForceGraph2D } from 'react-force-graph';
 import './App.css';
 
 export default function App() {
