@@ -1,5 +1,5 @@
 import React from 'react';
-import { Graph } from 'react-d3-graph';
+import ForceGraph2D from 'react-force-graph';
 import './App.css';
 
 export default function App() {
@@ -45,21 +45,15 @@ export default function App() {
     ],
   };
 
-  // Configuration for the graph
-  const myConfig = {
-    nodeHighlightBehavior: true,
-    node: { color: 'lightblue', size: 120, highlightStrokeColor: 'red' },
-    link: { highlightColor: 'lightblue' },
-  };
 
   return (
     <div>
       <h1>Interactive Stakeholder Graph</h1>
-      <Graph
-        id="stakeholder-graph" // unique id for the graph
-        data={data}
-        config={myConfig}
+      <ForceGraph2D
+        graphData={data}
+        nodeAutoColorBy="id"
       />
     </div>
   );
 }
+
