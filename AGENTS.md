@@ -56,4 +56,8 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 - Located in `apps/portfolio-state-machine/src/App.jsx` and bootstrapped by `apps/portfolio-state-machine/src/index.jsx`.
 - Manages a portfolio of projects using a state machine and includes a simulation mode.
 - Run locally with `APP=portfolio-state-machine npm start`.
+### Stakeholder Analysis Dashboard
+- Located in `apps/stakeholder-analysis-dashboard/src/App.jsx` and bootstrapped by `apps/stakeholder-analysis-dashboard/src/index.jsx`.
+- Visualises stakeholder relationships, alignment and sentiment for different project roles.
+- Run locally with `APP=stakeholder-analysis-dashboard npm start`.
 
