@@ -1,8 +1,10 @@
-import React from 'react';
-import ForceGraph2D from 'react-force-graph-2d';
-import './App.css';
+import React, { useState } from 'react'
+import ForceGraph2D from 'react-force-graph-2d'
+import './App.css'
+import Instructions from './Instructions'
 
 export default function App() {
+  const [showInstructions, setShowInstructions] = useState(false)
   // Define the graph data schema
   const data = {
     nodes: [
@@ -47,13 +49,19 @@ export default function App() {
 
 
   return (
-    <div>
+    <div className="app-container">
       <h1>Interactive Stakeholder Graph</h1>
+      <button onClick={() => setShowInstructions(!showInstructions)}>
+        {showInstructions ? 'Hide' : 'Show'} Instructions
+      </button>
+      {showInstructions && <Instructions />}
       <ForceGraph2D
         graphData={data}
         nodeAutoColorBy="id"
+        nodeLabel="id"
+        linkLabel={(link) => link.label || ''}
       />
     </div>
-  );
+  )
 }
 

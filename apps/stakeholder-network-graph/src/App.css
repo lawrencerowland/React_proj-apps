@@ -1,2 +1,12 @@
-main {
+.app-container {
+  font-family: sans-serif;
+  padding: 1rem;
+}
+
+button {
+  margin-bottom: 0.5rem;
+}
+
+.instructions {
+  margin-bottom: 1rem;
 }
