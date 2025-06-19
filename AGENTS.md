@@ -61,3 +61,10 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 - Visualises stakeholder relationships, alignment and sentiment for different project roles.
 - Run locally with `APP=stakeholder-analysis-dashboard npm start`.
 
+### Stakeholder Network Graph
+- Located in `apps/stakeholder-network-graph/src/App.jsx` and bootstrapped by `apps/stakeholder-network-graph/src/index.jsx`.
+- Uses `react-force-graph-2d` to display interactive stakeholder networks.
+- This dependency is installed at the repository root. Future apps that also need network-graph functionality should import from `'react-force-graph-2d'` and avoid creating per-app `package.json` files.
+- Add any additional graph libraries only once in the root `package.json` and run `npm install` so all apps share them.
+- Run locally with `APP=stakeholder-network-graph npm start`.
+
