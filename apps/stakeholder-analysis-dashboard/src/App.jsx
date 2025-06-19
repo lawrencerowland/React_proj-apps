@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import './App.css'
 
 // Mock data
@@ -119,7 +119,7 @@ const StakeholderMatrix = () => {
           <Legend />
           <Scatter name="Stakeholders" data={stakeholderData} fill="#8884d8">
             {stakeholderData.map((entry, index) => (
-              <cell key={`cell-${index}`} fill={entry.sentiment > 0 ? '#82ca9d' : '#ff7300'} />
+              <Cell key={`cell-${index}`} fill={entry.sentiment > 0 ? '#82ca9d' : '#ff7300'} />
             ))}
           </Scatter>
         </ScatterChart>
