@@ -1,0 +1,199 @@
+@prefix : <http://pszwed.ia.agh.edu.pl/ontologies/2010/Decision.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:Accept a :DecisionStatement,
+        owl:NamedIndividual,
+        owl:Thing .
+
+:ComplexDecision a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+            owl:onClass :SubsidiaryDecision ;
+            owl:onProperty :consistOf ],
+        :Decision .
+
+:Consultant a owl:Class ;
+    rdfs:subClassOf :DecisionProcessParticipant .
+
+:Deffer a :DecisionStatement,
+        owl:NamedIndividual,
+        owl:Thing .
+
+:Expert a owl:Class ;
+    rdfs:subClassOf :DecisionProcessParticipant .
+
+:Neutral a :DecisionStatement,
+        owl:NamedIndividual,
+        owl:Thing .
+
+:Reject a :DecisionStatement,
+        owl:NamedIndividual,
+        owl:Thing .
+
+:StatementDecision a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onClass :DecisionStatement ;
+            owl:onProperty :hasStatement ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        :Decision .
+
+<http://pszwed.kis.agh.edu.pl/ontologies//Decision.owl> a owl:Ontology ;
+    rdfs:comment "Decision ontology - draft. P.Szwed 2010" .
+
+:DecisionConstraint a owl:Class ;
+    rdfs:comment "constraints under which the decision is made,e.g. the decident choses between A and B or all decisions must satisfy a predicate" ;
+    rdfs:subClassOf :DecisionProperty .
+
+:DecisionContext a owl:Class ;
+    rdfs:comment "conditions under which the decision is made, eg. the waepon may be used under the threat to life conditions" ;
+    rdfs:subClassOf :DecisionProperty .
+
+:SubsidiaryDecision a owl:Class ;
+    rdfs:subClassOf :Decision .
+
+:cancels a owl:ObjectProperty ;
+    rdfs:comment """Decyzja może unieważniac inne, wczesniejsze decyzje.
+W praktycznej sytuacji - unieważnia to przez co decyzja jest widoczna, czyli DecisionArtifact""" ;
+    rdfs:domain :Decision .
+
+:communicatesDecision a owl:ObjectProperty .
+
+:concerns a owl:ObjectProperty ;
+    rdfs:comment "Obiekt, którego decyzja dotyczy" ;
+    rdfs:domain :Decision ;
+    rdfs:range :DecisionObject .
+
+:consistOf a owl:ObjectProperty ;
+    rdfs:comment "Decyzja może składać się z decyzji niższego poziomu" .
+
+:hasArtifact a owl:ObjectProperty ;
+    rdfs:comment "Artefakt, który służy do opublikowania decyzji" ;
+    owl:inverseOf :communicatesDecision .
+
+:hasConstraint a owl:ObjectProperty ;
+    rdfs:comment "Ograniczenia, którym podlega decyzja" .
+
+:hasContext a owl:ObjectProperty ;
+    rdfs:comment "Dlaczego jest podjemowana decyzja?" ;
+    rdfs:domain :Decision .
+
+:hasParty a owl:ObjectProperty ;
+    rdfs:domain :Decision ;
+    rdfs:range :Party .
+
+:hasStatement a owl:ObjectProperty ;
+    rdfs:domain :Decision ;
+    rdfs:range :DecisionStatement .
+
+:isEffective a owl:ObjectProperty ;
+    rdfs:domain :Decision ;
+    rdfs:range :DecisionEvent .
+
+:isMadeAt a owl:ObjectProperty ;
+    rdfs:comment "Określa, kiedy deczyja jets podejmowana" ;
+    rdfs:domain :Decision ;
+    rdfs:range :DecisionEvent .
+
+:isMadeBy a owl:ObjectProperty ;
+    rdfs:comment "określa decydenta" ;
+    rdfs:domain :Decision ;
+    rdfs:range :DecisionMaker .
+
+:recipient a owl:ObjectProperty ;
+    rdfs:comment "Odbiorca decyzji (rola)" ;
+    rdfs:domain :Decision ;
+    rdfs:range :Party .
+
+:resultsFrom a owl:ObjectProperty ;
+    rdfs:comment "powiązanie z procesem decyzyjnym" ;
+    rdfs:domain :Decision ;
+    rdfs:range :DecisionProcess .
+
+:DecisionArtifact a owl:Class ;
+    rdfs:comment "document reflecting or publishing the decision" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :recipient ;
+            owl:someValuesFrom :Party ],
+        [ a owl:Restriction ;
+            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+            owl:onClass :DecisionArtifact ;
+            owl:onProperty :cancels ],
+        :DecisionProperty .
+
+:DecisionMaker a owl:Class ;
+    rdfs:subClassOf :DecisionProcessParticipant .
+
+:DecisionObject a owl:Class ;
+    rdfs:comment "the object influenced by the decision" ;
+    rdfs:subClassOf :DecisionProperty .
+
+:DecisionProcess a owl:Class .
+
+:isSupportedBy a owl:ObjectProperty ;
+    rdfs:comment "Udziałowiec procesu deczyjnego, ale nie decydent" ;
+    rdfs:domain :Decision .
+
+:DecisionEvent a owl:Class ;
+    rdfs:comment "when the decision is made or when is effective" ;
+    rdfs:subClassOf :DecisionProperty .
+
+:Party a owl:Class ;
+    rdfs:subClassOf :DecisionProcessParticipant .
+
+owl:Thing a owl:Class .
+
+:DecisionProcessParticipant a owl:Class .
+
+:DecisionProperty a owl:Class .
+
+:DecisionStatement a owl:Class ;
+    rdfs:comment "statement: yes or no, accept, reject, neutral, etc." ;
+    rdfs:subClassOf :DecisionProperty .
+
+:Decision a owl:Class ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onProperty :hasConstraint ;
+            owl:someValuesFrom :DecisionConstraint ],
+        [ a owl:Restriction ;
+            owl:onProperty :resultsFrom ;
+            owl:someValuesFrom :DecisionProcess ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasContext ;
+            owl:someValuesFrom :DecisionContext ],
+        [ a owl:Restriction ;
+            owl:onProperty :isMadeBy ;
+            owl:someValuesFrom :DecisionMaker ],
+        [ a owl:Restriction ;
+            owl:onProperty :hasArtifact ;
+            owl:someValuesFrom :DecisionArtifact ],
+        [ a owl:Restriction ;
+            owl:onClass :DecisionEvent ;
+            owl:onProperty :isMadeAt ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+            owl:onClass :Party ;
+            owl:onProperty :hasParty ],
+        [ a owl:Restriction ;
+            owl:onClass :DecisionEvent ;
+            owl:onProperty :isEffective ;
+            owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ],
+        [ a owl:Restriction ;
+            owl:onProperty :concerns ;
+            owl:someValuesFrom :DecisionObject ],
+        [ a owl:Restriction ;
+            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+            owl:onClass :DecisionProcessParticipant ;
+            owl:onProperty :isSupportedBy ] .
+
+[] a owl:Axiom ;
+    rdfs:comment "relates to a decision or to a decision process?" ;
+    owl:annotatedProperty rdfs:subClassOf ;
+    owl:annotatedSource :Decision ;
+    owl:annotatedTarget [ a owl:Restriction ;
+            owl:minQualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+            owl:onClass :DecisionProcessParticipant ;
+            owl:onProperty :isSupportedBy ] .
+

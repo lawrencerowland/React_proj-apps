@@ -1,0 +1,6 @@
+@import 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
+
+.custom-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
