@@ -1,6 +1,6 @@
 # Project Apps
 
-This repository hosts a collection of small React applications. The main example is a **Project Management Simulation** implementing Active Inference principles. A second app, **Project Dynamics Simulator**, explores feedback loops in projects. A third app, **IT Project Sequential Decisions**, demonstrates sequential decision making for IT projects. A fourth app, **Portfolio State Machine**, models project portfolios using a state machine. A fifth app, **Stakeholder Analysis Dashboard**, visualises stakeholder perspectives. A sixth app, **Stakeholder Network Graph**, displays stakeholder relationships as an interactive graph. All apps are built with **Vite** and use [Recharts](https://recharts.org/) for charts.
+This repository hosts a collection of small React applications. The main example is a **Project Management Simulation** implementing Active Inference principles. A second app, **Project Dynamics Simulator**, explores feedback loops in projects. A third app, **IT Project Sequential Decisions**, demonstrates sequential decision making for IT projects. A fourth app, **Portfolio State Machine**, models project portfolios using a state machine. A fifth app, **Stakeholder Analysis Dashboard**, visualises stakeholder perspectives. A sixth app, **Stakeholder Network Graph**, displays stakeholder relationships as an interactive graph. A seventh app, **Pareto Projects**, examines pushing project value beyond the Pareto frontier. An eighth app, **Market Timeline Explorer**, charts potential market dynamics within the project‑management services industry. All apps are built with **Vite** and use [Recharts](https://recharts.org/) for charts.
 
 ## Getting Started
 
@@ -32,6 +32,14 @@ This repository hosts a collection of small React applications. The main example
   To work on the Stakeholder Network Graph app run:
   ```bash
   APP=stakeholder-network-graph npm start
+  ```
+  To work on the Pareto Projects app run:
+  ```bash
+  APP=pareto_projects npm start
+  ```
+  To work on the Market Timeline Explorer app run:
+  ```bash
+  APP=market_timeline_explorer npm start
   ```
   The page reloads automatically when files change.
 
@@ -71,6 +79,14 @@ This repository hosts a collection of small React applications. The main example
   Preview the Stakeholder Network Graph app with:
   ```bash
   APP=stakeholder-network-graph npm run preview
+  ```
+  Preview the Pareto Projects app with:
+  ```bash
+  APP=pareto_projects npm run preview
+  ```
+  Preview the Market Timeline Explorer app with:
+  ```bash
+  APP=market_timeline_explorer npm run preview
   ```
 
 ## Project Structure
