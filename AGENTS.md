@@ -68,3 +68,13 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 - Add any additional graph libraries only once in the root `package.json` and run `npm install` so all apps share them.
 - Run locally with `APP=stakeholder-network-graph npm start`.
 
+### Pareto Projects
+- Located in `apps/pareto_projects/src/App.jsx` and bootstrapped by `apps/pareto_projects/src/index.jsx`.
+- Encourages teams to push project value beyond the usual Pareto frontier.
+- Run locally with `APP=pareto_projects npm start`.
+
+### Market Timeline Explorer
+- Located in `apps/market_timeline_explorer/src/app.jsx` and bootstrapped by `apps/market_timeline_explorer/src/index.jsx`.
+- Charts potential market shifts for project-management services through AGI and ASI milestones.
+- Run locally with `APP=market_timeline_explorer npm start`.
+
