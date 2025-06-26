@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactFlow, { Background, Controls } from 'reactflow';
+import 'reactflow/dist/style.css';
 import './App.css';
 
 class DecisionGuideLogic {
@@ -250,11 +252,54 @@ export default function App() {
   const [summary, setSummary] = useState(null);
   const [textValue, setTextValue] = useState('');
   const [multiValues, setMultiValues] = useState([]);
+  const [nodes, setNodes] = useState([]);
+  const [edges, setEdges] = useState([]);
 
   useEffect(() => {
     setTextValue('');
     setMultiValues([]);
   }, [currentQuestion]);
+
+  const generateGraphData = (info, currentClass) => {
+    const nds = [
+      {
+        id: 'Decision',
+        data: { label: info.Decision || 'Decision' },
+        position: { x: 0, y: 0 },
+        style: currentClass === 'Decision' ? { background: '#ffeb3b' } : {}
+      }
+    ];
+    const eds = [];
+    let index = 1;
+    Object.entries(info).forEach(([k, v]) => {
+      if (k === 'Decision') return;
+      const label = Array.isArray(v) ? `${k}: ${v.join(', ')}` : `${k}: ${v}`;
+      nds.push({
+        id: k,
+        data: { label },
+        position: { x: index * 150, y: 0 },
+        style: currentClass === k ? { background: '#ffeb3b' } : {}
+      });
+      eds.push({ id: `Decision-${k}`, source: 'Decision', target: k });
+      index += 1;
+    });
+    if (currentClass && !info[currentClass] && currentClass !== 'Decision') {
+      nds.push({
+        id: currentClass,
+        data: { label: currentClass },
+        position: { x: index * 150, y: 0 },
+        style: { background: '#ffeb3b' }
+      });
+      eds.push({ id: `Decision-${currentClass}`, source: 'Decision', target: currentClass });
+    }
+    return { nds, eds };
+  };
+
+  useEffect(() => {
+    const { nds, eds } = generateGraphData(decisions, currentQuestion.current_class);
+    setNodes(nds);
+    setEdges(eds);
+  }, [decisions, currentQuestion]);
 
   const submitAnswer = (answer) => {
     const cq = currentQuestion.current_class;
@@ -287,6 +332,12 @@ export default function App() {
 
   return (
     <div className="app-container">
+      <div className="graph-container">
+        <ReactFlow nodes={nodes} edges={edges} fitView>
+          <Background />
+          <Controls />
+        </ReactFlow>
+      </div>
       <h2>{currentQuestion.question}</h2>
       {currentQuestion.footnote && <p className="footnote">{currentQuestion.footnote}</p>}
       {currentQuestion.options && !currentQuestion.multiple_select && (

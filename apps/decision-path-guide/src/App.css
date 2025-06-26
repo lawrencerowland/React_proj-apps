@@ -18,3 +18,9 @@
   font-size: 0.9rem;
   color: #555;
 }
+
+.graph-container {
+  height: 300px;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
