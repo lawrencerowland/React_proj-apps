@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactFlow, { Background, Controls } from 'reactflow';
+import ReactFlow, { Background, Controls, ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './App.css';
 
@@ -333,10 +333,12 @@ export default function App() {
   return (
     <div className="app-container">
       <div className="graph-container">
-        <ReactFlow nodes={nodes} edges={edges} fitView>
-          <Background />
-          <Controls />
-        </ReactFlow>
+        <ReactFlowProvider>
+          <ReactFlow nodes={nodes} edges={edges} fitView>
+            <Background />
+            <Controls />
+          </ReactFlow>
+        </ReactFlowProvider>
       </div>
       <h2>{currentQuestion.question}</h2>
       {currentQuestion.footnote && <p className="footnote">{currentQuestion.footnote}</p>}
