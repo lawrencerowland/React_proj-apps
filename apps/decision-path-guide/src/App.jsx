@@ -248,10 +248,13 @@ class DecisionGuideLogic {
 export default function App() {
   const logicRef = useRef(new DecisionGuideLogic());
   const [decisions, setDecisions] = useState({});
-  const [currentQuestion, setCurrentQuestion] = useState(() => logicRef.current.getNextQuestion(null, null, {}));
+  const [currentQuestion, setCurrentQuestion] = useState(() =>
+    logicRef.current.getNextQuestion(null, null, {})
+  );
   const [summary, setSummary] = useState(null);
   const [textValue, setTextValue] = useState('');
   const [multiValues, setMultiValues] = useState([]);
+  const [history, setHistory] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
 
@@ -260,51 +263,117 @@ export default function App() {
     setMultiValues([]);
   }, [currentQuestion]);
 
-  const generateGraphData = (info, currentClass) => {
+  const generateGraphData = (steps, cq) => {
+    const rootLabel = steps[0] && steps[0].class === 'Decision'
+      ? `Decision: ${Array.isArray(steps[0].answer) ? steps[0].answer.join(', ') : steps[0].answer}`
+      : 'Decision';
+
     const nds = [
       {
         id: 'Decision',
-        data: { label: info.Decision || 'Decision' },
-        position: { x: 0, y: 0 },
-        style: currentClass === 'Decision' ? { background: '#ffeb3b' } : {}
+        data: { label: rootLabel },
+        position: { x: 0, y: 0 }
       }
     ];
     const eds = [];
-    let index = 1;
-    Object.entries(info).forEach(([k, v]) => {
-      if (k === 'Decision') return;
-      const label = Array.isArray(v) ? `${k}: ${v.join(', ')}` : `${k}: ${v}`;
+
+    let parentId = 'Decision';
+    let stepList = steps;
+    if (steps[0] && steps[0].class === 'Decision') {
+      const first = steps[0];
+      if (first.options && !first.multiple_select) {
+        first.options.forEach((opt, i) => {
+          if (opt !== first.answer) {
+            const optId = `Decision-opt-${i}`;
+            nds.push({
+              id: optId,
+              data: { label: opt },
+              position: { x: (i + 1) * 150, y: 0 },
+              style: { opacity: 0.5 }
+            });
+            eds.push({ id: `Decision-${optId}`, source: 'Decision', target: optId });
+          }
+        });
+      }
+      stepList = steps.slice(1);
+    }
+
+    stepList.forEach((step, idx) => {
+      const stepId = `step-${idx}`;
+      const label = Array.isArray(step.answer)
+        ? `${step.class}: ${step.answer.join(', ')}`
+        : `${step.class}: ${step.answer}`;
       nds.push({
-        id: k,
+        id: stepId,
         data: { label },
-        position: { x: index * 150, y: 0 },
-        style: currentClass === k ? { background: '#ffeb3b' } : {}
+        position: { x: 0, y: (idx + 1) * 120 }
       });
-      eds.push({ id: `Decision-${k}`, source: 'Decision', target: k });
-      index += 1;
+      eds.push({ id: `${parentId}-${stepId}`, source: parentId, target: stepId });
+
+      if (step.options && !step.multiple_select) {
+        step.options.forEach((opt, i) => {
+          if (opt !== step.answer) {
+            const optId = `${stepId}-opt-${i}`;
+            nds.push({
+              id: optId,
+              data: { label: opt },
+              position: { x: (i + 1) * 150, y: (idx + 1) * 120 },
+              style: { opacity: 0.5 }
+            });
+            eds.push({ id: `${parentId}-${optId}`, source: parentId, target: optId });
+          }
+        });
+      }
+
+      parentId = stepId;
     });
-    if (currentClass && !info[currentClass] && currentClass !== 'Decision') {
+
+    if (cq) {
+      const curY = (steps.length + 1) * 120;
       nds.push({
-        id: currentClass,
-        data: { label: currentClass },
-        position: { x: index * 150, y: 0 },
+        id: 'current',
+        data: { label: cq },
+        position: { x: 0, y: curY },
         style: { background: '#ffeb3b' }
       });
-      eds.push({ id: `Decision-${currentClass}`, source: 'Decision', target: currentClass });
+      eds.push({ id: `${parentId}-current`, source: parentId, target: 'current' });
+
+      if (currentQuestion.options && !currentQuestion.multiple_select) {
+        currentQuestion.options.forEach((opt, i) => {
+          const optId = `current-opt-${i}`;
+          nds.push({
+            id: optId,
+            data: { label: opt },
+            position: { x: (i + 1) * 150, y: curY },
+            style: { opacity: 0.5 }
+          });
+          eds.push({ id: `current-${optId}`, source: 'current', target: optId });
+        });
+      }
     }
+
     return { nds, eds };
   };
 
   useEffect(() => {
-    const { nds, eds } = generateGraphData(decisions, currentQuestion.current_class);
+    const { nds, eds } = generateGraphData(history, currentQuestion.current_class);
     setNodes(nds);
     setEdges(eds);
-  }, [decisions, currentQuestion]);
+  }, [history, currentQuestion]);
 
   const submitAnswer = (answer) => {
     const cq = currentQuestion.current_class;
     const newDecisions = { ...decisions, [cq]: answer };
     setDecisions(newDecisions);
+    setHistory(prev => [
+      ...prev,
+      {
+        class: cq,
+        answer,
+        options: currentQuestion.options,
+        multiple_select: currentQuestion.multiple_select
+      }
+    ]);
     const next = logicRef.current.getNextQuestion(cq, answer, newDecisions);
     if (next) {
       setCurrentQuestion(next);
@@ -317,6 +386,7 @@ export default function App() {
     logicRef.current = new DecisionGuideLogic();
     const first = logicRef.current.getNextQuestion(null, null, {});
     setDecisions({});
+    setHistory([]);
     setSummary(null);
     setCurrentQuestion(first);
   };
