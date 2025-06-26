@@ -10,16 +10,16 @@ class DecisionGuideLogic {
     this.selectedProperties = [];
     this.currentPropertyIndex = 0;
     this.footnotes = {
-      DecisionContext: 'conditions under which the decision is made, eg. the waepon may be used under the threat to life conditions',
-      DecisionConstraint: 'constraints under which the decision is made,e.g. the decident choses between A and B or all decisions must satisfy a predicate',
+      DecisionContext: 'conditions under which the decision is made, e.g. the weapon may be used under threat to life conditions',
+      DecisionConstraint: 'constraints under which the decision is made, e.g. the decider chooses between A and B or all decisions must satisfy a predicate',
       DecisionArtifact: 'document reflecting or publishing the decision',
       DecisionObject: 'the object influenced by the decision',
       DecisionStatement: 'statement: yes or no, accept, reject, neutral, etc.',
-      cancels: 'Decyzja może unieważniac inne, wczesniejsze decyzje. W praktycznej sytuacji - unieważnia to przez co decyzja jest widoczna, czyli DecisionArtifact',
-      isSupportedBy: 'Udziałowiec procesu deczyjnego, ale nie decydent',
-      resultsFrom: 'powiązanie z procesem decyzyjnym',
+      cancels: 'A decision can cancel other earlier decisions. In practice, canceling a decision means invalidating the artifact through which that decision is documented (the DecisionArtifact).',
+      isSupportedBy: 'A stakeholder in the decision-making process, but not the decision-maker.',
+      resultsFrom: 'Connection to the decision-making process.',
       DecisionEvent: 'when the decision is made or when is effective',
-      recipient: 'Odbiorca decyzji (rola)'
+      recipient: 'Recipient of the decision (role).'
     };
   }
 
