@@ -5,6 +5,7 @@
 4,portfolio-state-machine,Takes a bespoke portfolio prioritisation process logic and processes projects as per that logic,cant remember,Cant remember,"portfolio, bespoke_workflow",,
 5,stakeholder-analysis-dashboard,"Stakeholder analysis that shows different perspectives to different team members, networked view also",cant remember,Cant remember,"stakeholder, knowldege_graph, mutiple_perspectives, ",,
 6,stakeholder-network-graph,interactive graph of stakeholder relationships,cant remember,Cant remember,"stakeholder, knowledge_graph",,
-10,decision-path-guide,Interactive guide using an ontology-based questionnaire,Replit Python/Flask,,"decision, ontology",,
+7,pareto_projects,Push out the curve for everyone,cant remember,Cant remember,"competition, game_theory",,
 8,market_timeline_explorer,An example of the possible market dynamics within the PM services industry through AGI and ASI milestones,ChatGPT,o3 Pro,"business_model, adoption",,
 9,Another-IT-project-simulation,A different twist on the sequential decision making in IT projects to cope with ongoing uncertainty- this one is more of a training game,cant remember,Cant remember,"decision, Uncertainty, gamification",,
+10,decision-path-guide,Interactive guide using an ontology-based questionnaire,Replit,Cant remember,"decision, ontology",,
