@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
 
+// Helper to lighten a hex color by mixing it with white
+const lightenColor = (hex, amount = 0.8) => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = (num >> 16) & 0xff;
+  const g = (num >> 8) & 0xff;
+  const b = num & 0xff;
+  const lighten = (c) => Math.round(c + (255 - c) * amount);
+  return (
+    '#' +
+    [lighten(r), lighten(g), lighten(b)]
+      .map((x) => x.toString(16).padStart(2, '0'))
+      .join('')
+  );
+};
+
 const AICapabilitiesDiagram = () => {
   // Define the three layers of nodes
   const layers = {
@@ -66,6 +81,26 @@ const AICapabilitiesDiagram = () => {
   const isHighlighted = (node) => {
     if (!activeModel) return true;
     return node.models.includes(activeModel);
+  };
+
+  // Find a color representing the connection between two nodes
+  const getConnectionColor = (nodeA, nodeB) => {
+    if (!nodeA || !nodeB) return '#3b82f6'; // Tailwind blue-500 default
+
+    // If a model filter is active and both nodes include it, use that color
+    if (activeModel && nodeA.models.includes(activeModel) && nodeB.models.includes(activeModel)) {
+      const model = models.find(m => m.id === activeModel);
+      if (model) return model.color;
+    }
+
+    // Otherwise pick the first shared model between the nodes
+    const shared = nodeA.models.find(m => nodeB.models.includes(m));
+    if (shared) {
+      const model = models.find(m => m.id === shared);
+      if (model) return model.color;
+    }
+
+    return '#3b82f6';
   };
 
   // Function to find all connected nodes across layers
@@ -196,18 +231,23 @@ const AICapabilitiesDiagram = () => {
               return (
                 <div
                   key={node.id}
-                  className={`p-3 rounded-lg text-center transition-all duration-200 
-                    ${!isHighlighted(node) ? 'opacity-30' : ''} 
-                    ${isEgoNode ? 'ring-4 ring-blue-600 shadow-lg scale-105 z-10' : 
-                     isConnected ? 'ring-2 ring-blue-400 shadow-md' : 'shadow-sm'}`}
-                  style={{ 
-                    backgroundColor: isHighlighted(node) ? 
-                      (isEgoNode ? '#e6f0ff' : isConnected ? '#f0f7ff' : '#f0f4f8') : 
-                      '#f0f0f0',
+                  className={`p-3 rounded-lg text-center transition-all duration-200
+                    ${!isHighlighted(node) ? 'opacity-30' : ''}
+                    ${isEgoNode ? 'ring-4 shadow-lg scale-105 z-10' :
+                     isConnected ? 'ring-2 shadow-md' : 'shadow-sm'}`}
+                  style={{
+                    backgroundColor: isHighlighted(node) ?
+                      (isEgoNode
+                        ? lightenColor(getConnectionColor(hoveredNodeObj, node), 0.85)
+                        : isConnected
+                          ? lightenColor(getConnectionColor(hoveredNodeObj, node), 0.9)
+                          : '#f0f4f8')
+                      : '#f0f0f0',
                     cursor: 'pointer',
                     opacity: opacity,
                     transform: isEgoNode ? 'scale(1.05)' : 'scale(1)',
-                    transition: 'all 0.2s ease-in-out'
+                    transition: 'all 0.2s ease-in-out',
+                    '--tw-ring-color': getConnectionColor(hoveredNodeObj, node)
                   }}
                   onMouseEnter={() => setHoveredNode(`inputs:${node.id}`)}
                   onMouseLeave={() => setHoveredNode(null)}
@@ -248,19 +288,24 @@ const AICapabilitiesDiagram = () => {
               return (
                 <div
                   key={node.id}
-                  className={`p-3 rounded-lg text-center transition-all duration-200 
-                    ${!isHighlighted(node) ? 'opacity-30' : ''} 
-                    ${isEgoNode ? 'ring-4 ring-blue-600 shadow-lg scale-105 z-10' : 
-                     isConnected ? 'ring-2 ring-blue-400 shadow-md' : 'shadow-sm'}`}
-                  style={{ 
-                    backgroundColor: isHighlighted(node) ? 
-                      (isEgoNode ? '#e6f0ff' : isConnected ? '#f0f7ff' : '#edf2ff') : 
-                      '#f0f0f0',
+                  className={`p-3 rounded-lg text-center transition-all duration-200
+                    ${!isHighlighted(node) ? 'opacity-30' : ''}
+                    ${isEgoNode ? 'ring-4 shadow-lg scale-105 z-10' :
+                     isConnected ? 'ring-2 shadow-md' : 'shadow-sm'}`}
+                  style={{
+                    backgroundColor: isHighlighted(node) ?
+                      (isEgoNode
+                        ? lightenColor(getConnectionColor(hoveredNodeObj, node), 0.85)
+                        : isConnected
+                          ? lightenColor(getConnectionColor(hoveredNodeObj, node), 0.9)
+                          : '#edf2ff')
+                      : '#f0f0f0',
                     cursor: 'pointer',
                     opacity: opacity,
                     transform: isEgoNode ? 'scale(1.05)' : 'scale(1)',
-                    transition: 'all 0.2s ease-in-out'
-                  }}
+                    transition: 'all 0.2s ease-in-out',
+                    '--tw-ring-color': getConnectionColor(hoveredNodeObj, node)
+                 }}
                   onMouseEnter={() => setHoveredNode(`processing:${node.id}`)}
                   onMouseLeave={() => setHoveredNode(null)}
                   title={node.description}
@@ -300,19 +345,24 @@ const AICapabilitiesDiagram = () => {
               return (
                 <div
                   key={node.id}
-                  className={`p-3 rounded-lg text-center transition-all duration-200 
-                    ${!isHighlighted(node) ? 'opacity-30' : ''} 
-                    ${isEgoNode ? 'ring-4 ring-blue-600 shadow-lg scale-105 z-10' : 
-                     isConnected ? 'ring-2 ring-blue-400 shadow-md' : 'shadow-sm'}`}
-                  style={{ 
-                    backgroundColor: isHighlighted(node) ? 
-                      (isEgoNode ? '#e6f0ff' : isConnected ? '#f0f7ff' : '#f0f8f4') : 
-                      '#f0f0f0',
+                  className={`p-3 rounded-lg text-center transition-all duration-200
+                    ${!isHighlighted(node) ? 'opacity-30' : ''}
+                    ${isEgoNode ? 'ring-4 shadow-lg scale-105 z-10' :
+                     isConnected ? 'ring-2 shadow-md' : 'shadow-sm'}`}
+                  style={{
+                    backgroundColor: isHighlighted(node) ?
+                      (isEgoNode
+                        ? lightenColor(getConnectionColor(hoveredNodeObj, node), 0.85)
+                        : isConnected
+                          ? lightenColor(getConnectionColor(hoveredNodeObj, node), 0.9)
+                          : '#f0f8f4')
+                      : '#f0f0f0',
                     cursor: 'pointer',
                     opacity: opacity,
                     transform: isEgoNode ? 'scale(1.05)' : 'scale(1)',
-                    transition: 'all 0.2s ease-in-out'
-                  }}
+                    transition: 'all 0.2s ease-in-out',
+                    '--tw-ring-color': getConnectionColor(hoveredNodeObj, node)
+                 }}
                   onMouseEnter={() => setHoveredNode(`outputs:${node.id}`)}
                   onMouseLeave={() => setHoveredNode(null)}
                   title={node.description}
