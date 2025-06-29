@@ -57,3 +57,5 @@ code {
 .bg-red-500{background-color:#ef4444;}
 .bg-yellow-50{background-color:#fefce8;}
 .text-white{color:#fff;}
+.w-full{width:100%;}
+.h-64{height:16rem;}
