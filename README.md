@@ -1,6 +1,6 @@
 # Project Apps
 
-This repository hosts a collection of small React applications. The main example is a **Project Management Simulation** implementing Active Inference principles. A second app, **Project Dynamics Simulator**, explores feedback loops in projects. A third app, **IT Project Sequential Decisions**, demonstrates sequential decision making for IT projects. A fourth app, **Portfolio State Machine**, models project portfolios using a state machine. A fifth app, **Stakeholder Analysis Dashboard**, visualises stakeholder perspectives. A sixth app, **Stakeholder Network Graph**, displays stakeholder relationships as an interactive graph. A seventh app, **Pareto Projects**, examines pushing project value beyond the Pareto frontier. An eighth app, **Market Timeline Explorer**, charts potential market dynamics within the project‑management services industry. A ninth app, **Capabilities Wiring Diagram**, visualises AI model inputs, reasoning stages and output formats. A tenth app, **Copula Risk Analysis**, models correlated task delays using copulas. All apps are built with **Vite** and use [Recharts](https://recharts.org/) for charts.
+This repository hosts a collection of small React applications. The main example is a **Project Management Simulation** implementing Active Inference principles. A second app, **Project Dynamics Simulator**, explores feedback loops in projects. A third app, **IT Project Sequential Decisions**, demonstrates sequential decision making for IT projects. A fourth app, **Portfolio State Machine**, models project portfolios using a state machine. A fifth app, **Stakeholder Analysis Dashboard**, visualises stakeholder perspectives. A sixth app, **Stakeholder Network Graph**, displays stakeholder relationships as an interactive graph. A seventh app, **Pareto Projects**, examines pushing project value beyond the Pareto frontier. An eighth app, **Market Timeline Explorer**, charts potential market dynamics within the project‑management services industry. A ninth app, **Another IT Project Simulation**, offers a training‑style variant of sequential decision making. A tenth app, **Decision Path Guide**, uses an ontology‑based questionnaire. An eleventh app, **Capabilities Wiring Diagram**, visualises AI model inputs, reasoning stages and output formats. A twelfth app, **Copula Risk Analysis**, models correlated task delays using copulas. All apps are built with **Vite** and use [Recharts](https://recharts.org/) for charts.
 
 ## Getting Started
 
@@ -40,6 +40,14 @@ This repository hosts a collection of small React applications. The main example
   To work on the Market Timeline Explorer app run:
   ```bash
   APP=market_timeline_explorer npm start
+  ```
+  To work on the Another IT Project Simulation app run:
+  ```bash
+  APP=Another-IT-project-simulation npm start
+  ```
+  To work on the Decision Path Guide app run:
+  ```bash
+  APP=decision-path-guide npm start
   ```
   To work on the Capabilities Wiring Diagram app run:
   ```bash
@@ -95,6 +103,14 @@ This repository hosts a collection of small React applications. The main example
   Preview the Market Timeline Explorer app with:
   ```bash
   APP=market_timeline_explorer npm run preview
+  ```
+  Preview the Another IT Project Simulation app with:
+  ```bash
+  APP=Another-IT-project-simulation npm run preview
+  ```
+  Preview the Decision Path Guide app with:
+  ```bash
+  APP=decision-path-guide npm run preview
   ```
   Preview the Capabilities Wiring Diagram app with:
   ```bash
