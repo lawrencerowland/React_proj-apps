@@ -1,0 +1,9 @@
+.app-container {
+  font-family: sans-serif;
+  padding: 1rem;
+}
+
+.tree-flow {
+  height: 70vh;
+  border: 1px solid #ccc;
+}
