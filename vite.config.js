@@ -10,10 +10,8 @@ const appName = process.env.APP || 'project-management-simulation';
 
 export default defineConfig({
   root: resolve(__dirname, `apps/${appName}`),
-  base:
-    process.env.NODE_ENV === 'production'
-      ? `/React_proj-apps/apps/${appName}/`
-      : '/',
+  // make built paths portable to any host folder
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   build: {
     outDir: resolve(__dirname, `docs/apps/${appName}`),
   },
