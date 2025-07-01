@@ -47,10 +47,12 @@ export default function App() {
   return (
     <div className="app-container">
       <h1>Scope to Benefits Tree: East West Rail</h1>
-      <ReactFlow nodes={nodes} edges={edges} fitView className="tree-flow">
-        <Background />
-        <Controls />
-      </ReactFlow>
+      <div style={{ height: '600px', width: '100%' }}>
+        <ReactFlow nodes={nodes} edges={edges} fitView className="tree-flow">
+          <Background />
+          <Controls />
+        </ReactFlow>
+      </div>
     </div>
   );
 }
