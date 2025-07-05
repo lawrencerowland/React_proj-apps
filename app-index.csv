@@ -13,3 +13,4 @@
 12,copula-risk-analysis,"A copula is a mathematical function that describes the dependence structure between tasks, separate from each task's individual delay distribution.",ChatGPT,Cant remember,"risk, dependency, correlation",,
 13,scope-benefits-tree,Visualise how scope outputs grow into benefits for the East West Rail upgrade,cant remember,Cant remember,scope,benefits,
 14,project-controls-knowledge-graph,"a knowledge graph for project controls as a discipline, alongside a graph path for a PM learning about project controls",Claude,Sonnet 3.6,"knowledge_graph, multiple_perspectives, project_controls, learning, paths",,
+15,pm-software-evolution,"detailed evolution of project management software in the last 20 years, with all its branches and convergences,",Claude,Sonnet 3.7,"timeline, knowledge_graph_dependencies,roadmap",,
