@@ -1,6 +1,6 @@
 import { expect, test, beforeAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import PMSoftwareEvolution from './App.jsx';
+import PMSoftwareEvolution from './App.tsx';
 
 beforeAll(() => {
   HTMLCanvasElement.prototype.getContext = () => ({
