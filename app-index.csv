@@ -3,7 +3,7 @@
 2,project-dynamics-simulator,introduce non-linear relationships into a project model which affect teams and performance,Claude,Cant remember,"gamification, feedback_loops, non_linearity, behaviour, learning,",,"Real projects are not just made up of task nodes connected by dependency edges. There are regular circles of daily activites, monthly progress review actions etc. There is negative feedback pushing back on attempted initaitives. there are positive reinforcing loops initiated sometimes after the first or second task has been done"
 3,IT-project-seq-decisions,Applies Powell's sequential decision making framework to an IT project,cant remember,Cant remember,"decision, uncertainty",,
 4,portfolio-state-machine,Takes a bespoke portfolio prioritisation process logic and processes projects as per that logic,cant remember,Cant remember,"portfolio, bespoke_workflow",,
-5,stakeholder-analysis-dashboard,"Stakeholder analysis that shows different perspectives to different team members, networked view also",cant remember,Cant remember,"stakeholder, knowldege_graph, mutiple_perspectives, ",,
+5,stakeholder-analysis-dashboard,"Stakeholder analysis that shows different perspectives to different team members, networked view also",cant remember,Cant remember,"stakeholder, knowledge_graph, mutiple_perspectives, ",,
 6,stakeholder-network-graph,interactive graph of stakeholder relationships,cant remember,Cant remember,"stakeholder, knowledge_graph",,
 7,pareto_projects,Push out the curve for everyone,cant remember,Cant remember,"competition, game_theory",,
 8,market_timeline_explorer,An example of the possible market dynamics within the PM services industry through AGI and ASI milestones,ChatGPT,o3 Pro,"business_model, adoption",,
@@ -12,3 +12,4 @@
 11,capabilities-wiring-diag,a wiring diagram for selecting which ai model to use at the moment,Claude,Sonnet 3.6,"workflow, adoption",,
 12,copula-risk-analysis,"A copula is a mathematical function that describes the dependence structure between tasks, separate from each task's individual delay distribution.",ChatGPT,Cant remember,"risk, dependency, correlation",,
 13,scope-benefits-tree,Visualise how scope outputs grow into benefits for the East West Rail upgrade,cant remember,Cant remember,scope,benefits,
+14,project-controls-knowledge-graph,"a knowledge graph for project controls as a discipline, alongside a graph path for a PM learning about project controls",Claude,Sonnet 3.6,"knowledge_graph, multiple_perspectives, project_controls, learning, paths",,
