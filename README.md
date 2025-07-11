@@ -56,15 +56,6 @@ This repository hosts a collection of small React applications. The main example
   ```bash
   APP=copula-risk-analysis npm start
   ```
-  To work on the Data Maturity Combined app run:
-  ```bash
-  APP=data-maturity-combined npm start
-  ```
-  To work on the Olaf Delivery Dashboard app run:
-  ```bash
-  APP=olaf-delivery-dashboard npm start
-  ```
-
   The page reloads automatically when files change.
 
 3. **Run tests**
@@ -128,15 +119,6 @@ This repository hosts a collection of small React applications. The main example
   ```bash
   APP=copula-risk-analysis npm run preview
   ```
-  Preview the Data Maturity Combined app with:
-  ```bash
-  APP=data-maturity-combined npm run preview
-  ```
-  Preview the Olaf Delivery Dashboard app with:
-  ```bash
-  APP=olaf-delivery-dashboard npm run preview
-  ```
-
 
 ## Project Structure
 
