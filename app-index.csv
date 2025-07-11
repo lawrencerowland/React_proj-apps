@@ -14,3 +14,5 @@
 13,scope-benefits-tree,Visualise how scope outputs grow into benefits for the East West Rail upgrade,cant remember,Cant remember,"scope, benefits",,
 14,project-controls-knowledge-graph,"a knowledge graph for project controls as a discipline, alongside a graph path for a PM learning about project controls",Claude,Sonnet 3.6,"knowledge_graph, multiple_perspectives, project_controls, learning, graph_pathways",,
 15,pm-software-evolution,"detailed evolution of project management software in the last 20 years, with all its branches and convergences,",Claude,Sonnet 3.7,"timeline, knowledge_graph_dependencies, roadmap",,
+16,olaf-delivery-dashboard,,Claude,Sonnet 3.5,workflow,,
+17,data-maturity-combined,assessing the data maturity of a project management organisation,Claude,Sonnet 3.6,"data, capability, maturity, adoption",,
