@@ -78,3 +78,10 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 - Charts potential market shifts for project-management services through AGI and ASI milestones.
 - Run locally with `APP=market_timeline_explorer npm start`.
 
+### Data Maturity Combined
+- Located in `apps/data-maturity-combined/src/App.tsx` and bootstrapped by `apps/data-maturity-combined/src/index.tsx`.
+- Run locally with `APP=data-maturity-combined npm start`.
+
+### Olaf Delivery Dashboard
+- Located in `apps/olaf-delivery-dashboard/src/App.tsx` and bootstrapped by `apps/olaf-delivery-dashboard/src/index.tsx`.
+- Run locally with `APP=olaf-delivery-dashboard npm start`.
