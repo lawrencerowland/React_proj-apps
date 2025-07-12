@@ -10,6 +10,7 @@ const DataMaturityAssessment = () => {
   const [highlightedLevel, setHighlightedLevel] = useState(null);
   const [activeTooltip, setActiveTooltip] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
+  const originalPromptText = `Write me a structured question framework, with question branches , for assessing the data maturity of a project management organisation, broken down into three mutually supporting levels of capability : 1. Project staff member. 2. Project team capability .3. Whole project organisation capability. Ask the most differentiating questions first , in case the interviewees only answer a few questions. please provide this as an artifact, both as: 1. a table including columns for question , question branch , capability area, capability level and scoring schema for the question. 2. an interactive graph of capability areas and question branches. You will need to provide very short labels to the nodes and edges, with a key`;
   
   // Capability areas (main nodes)
   const capabilities = [
@@ -112,6 +113,10 @@ const DataMaturityAssessment = () => {
         "4. Create a maturity heatmap using the scoring data across capability areas.",
         "5. Develop targeted improvement plans for the lowest-scoring areas."
       ]
+    },
+    originalPrompt: {
+      title: "Original Prompt",
+      content: [originalPromptText]
     }
   };
 
@@ -193,6 +198,13 @@ const DataMaturityAssessment = () => {
           </ul>
         </div>
       );
+    } else if (type === 'prompt') {
+      content = (
+        <div>
+          <h3 className="font-bold text-sm">Original Prompt</h3>
+          <p className="text-xs mt-1 whitespace-pre-wrap">{originalPromptText}</p>
+        </div>
+      );
     }
     
     return (
@@ -220,12 +232,25 @@ const DataMaturityAssessment = () => {
               </CardDescription>
             </div>
             <div className="flex gap-2">
-              <button 
+              <button
                 className="px-3 py-1 text-sm rounded-md bg-blue-100 hover:bg-blue-200 text-blue-800 flex items-center gap-1"
                 onClick={() => setShowHelp(!showHelp)}
               >
                 <Info size={16} /> Help
               </button>
+              <div className="relative">
+                <button
+                  className="px-3 py-1 text-sm rounded-md bg-green-100 hover:bg-green-200 text-green-800 flex items-center gap-1"
+                  onClick={() => setActiveTooltip('prompt')}
+                >
+                  <Info size={16} /> Original Prompt
+                </button>
+                {activeTooltip === 'prompt' && (
+                  <div className="relative mt-2">
+                    {renderTooltip('originalPrompt', 'prompt')}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           
