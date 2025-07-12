@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle, Truck, Package, XCircle, User, Info, AlertTriangle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from './components/ui/alert';
 
 const DeliveryDashboard = () => {
   const [counts, setCounts] = useState({
@@ -146,3 +146,4 @@ const StaffCheckButton = ({ name, checked, onClick }) => (
 );
 
 export default DeliveryDashboard;
+
