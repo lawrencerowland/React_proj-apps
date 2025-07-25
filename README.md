@@ -56,6 +56,10 @@ This repository hosts a collection of small React applications. The main example
   ```bash
   APP=copula-risk-analysis npm start
   ```
+  To work on the Building Site Occupancy Simulation app run:
+  ```bash
+  APP=building-site-occupancy-simulation npm start
+  ```
   The page reloads automatically when files change.
 
 3. **Run tests**
@@ -118,6 +122,10 @@ This repository hosts a collection of small React applications. The main example
   Preview the Copula Risk Analysis app with:
   ```bash
   APP=copula-risk-analysis npm run preview
+  ```
+  Preview the Building Site Occupancy Simulation app with:
+  ```bash
+  APP=building-site-occupancy-simulation npm run preview
   ```
 
 ## Project Structure

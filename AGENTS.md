@@ -78,3 +78,8 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 - Charts potential market shifts for project-management services through AGI and ASI milestones.
 - Run locally with `APP=market_timeline_explorer npm start`.
 
+### Building Site Occupancy Simulation
+- Located in `apps/building-site-occupancy-simulation/src/App.jsx` and bootstrapped by `apps/building-site-occupancy-simulation/src/index.jsx`.
+- Provides a NetLogo model simulating construction site occupancy over a 24‑hour period.
+- Run locally with `APP=building-site-occupancy-simulation npm start`.
+
