@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Building Site Occupancy Simulation</title>
+    <!-- Each application should link back to the index page.  The anchor
+         below returns the user to the root card index described in
+         `index.html` at the project root. -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        line-height: 1.4;
+      }
+      .back-link {
+        margin-bottom: 1rem;
+        display: inline-block;
+        color: #0a58ca;
+        text-decoration: none;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="../../index.html" class="back-link">&larr; Back to app index</a>
+      <div id="root"></div>
+    </div>
+    <script type="module" src="/apps/building-site-occupancy-simulation/src/index.jsx"></script>
+  </body>
+</html>
