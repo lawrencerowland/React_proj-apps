@@ -60,6 +60,10 @@ This repository hosts a collection of small React applications. The main example
   ```bash
   APP=building-site-occupancy-simulation npm start
   ```
+  To work on the Tag Concurrence Explorer app run:
+  ```bash
+  APP=tag-concurrence-explorer npm start
+  ```
   The page reloads automatically when files change.
 
 3. **Run tests**
@@ -126,6 +130,10 @@ This repository hosts a collection of small React applications. The main example
   Preview the Building Site Occupancy Simulation app with:
   ```bash
   APP=building-site-occupancy-simulation npm run preview
+  ```
+  Preview the Tag Concurrence Explorer app with:
+  ```bash
+  APP=tag-concurrence-explorer npm run preview
   ```
 
 ## Project Structure
