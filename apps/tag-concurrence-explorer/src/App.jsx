@@ -15,7 +15,7 @@ export default function App(){
   const [data, setData] = useState({ nodes: [], edges: [] });
 
   useEffect(() => {
-    fetch(new URL('../tag_concurrence_graph.json', import.meta.url).href)
+    fetch('./tag_concurrence_graph.json')
       .then(r => r.json())
       .then(setData)
       .catch(err => console.error('Failed to load graph data', err));
