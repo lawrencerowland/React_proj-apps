@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import './App.css';
 
@@ -13,6 +13,21 @@ export default function App(){
   const [threshold, setThreshold] = useState(0);
   const [layout, setLayout] = useState('cose');
   const [data, setData] = useState({ nodes: [], edges: [] });
+  const [tooltip, setTooltip] = useState(null);
+  const cyRef = useRef(null);
+
+  const handleCy = useCallback((cy) => {
+    cyRef.current = cy;
+    cy.on('mouseover', 'node', (evt) => {
+      const { x, y } = evt.renderedPosition || evt.position;
+      setTooltip({ label: evt.target.data('id'), x, y });
+    });
+    cy.on('mouseout', 'node', () => setTooltip(null));
+    cy.on('mousemove', 'node', (evt) => {
+      const { x, y } = evt.renderedPosition || evt.position;
+      setTooltip(t => t ? { ...t, x, y } : t);
+    });
+  }, []);
 
   useEffect(() => {
     fetch('./tag_concurrence_graph.json')
@@ -34,7 +49,12 @@ export default function App(){
         </select>
       </div>
       <div className="cy-container">
-        <CytoscapeComponent elements={elements} style={{ width: '100%', height: '100%' }} layout={{ name: layout }} />
+        <CytoscapeComponent cy={handleCy} elements={elements} style={{ width: '100%', height: '100%' }} layout={{ name: layout }} />
+        {tooltip && (
+          <div className="cy-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+            {tooltip.label}
+          </div>
+        )}
       </div>
     </div>
   );
