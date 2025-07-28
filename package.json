@@ -26,8 +26,8 @@
   },
   "scripts": {
     "start": "BROWSER=none WDS_SOCKET_PORT=0 vite --port 3000",
-    "prebuild": "node scripts/generate-tag-concurrence-graph.js",
     "build": "node scripts/build-all.js",
+    "postbuild": "node scripts/generate-tag-concurrence-graph.js",
     "preview": "vite preview",
     "test": "vitest"
   },
