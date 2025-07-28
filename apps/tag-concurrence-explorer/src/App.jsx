@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import data from './data.js';
 import './App.css';
 
-function elementsFromData(threshold){
+function elementsFromData(data, threshold){
   const filteredEdges = data.edges.filter(e=>e.weight>=threshold);
   const nodes = data.nodes.map(n=>({ data:{ id:n.id, weight:n.weight}}));
   const edges = filteredEdges.map(e=>({ data:{ id:`${e.source}-${e.target}`, source:e.source, target:e.target, weight:e.weight}}));
@@ -13,7 +12,16 @@ function elementsFromData(threshold){
 export default function App(){
   const [threshold, setThreshold] = useState(0);
   const [layout, setLayout] = useState('cose');
-  const elements = useMemo(()=>elementsFromData(threshold),[threshold]);
+  const [data, setData] = useState({ nodes: [], edges: [] });
+
+  useEffect(() => {
+    fetch(new URL('../tag_concurrence_graph.json', import.meta.url).href)
+      .then(r => r.json())
+      .then(setData)
+      .catch(err => console.error('Failed to load graph data', err));
+  }, []);
+
+  const elements = useMemo(() => elementsFromData(data, threshold), [data, threshold]);
   return (
     <div className="app-container">
       <div className="controls">
