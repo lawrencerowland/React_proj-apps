@@ -2,10 +2,17 @@ import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import CytoscapeComponent from 'react-cytoscapejs';
 import './App.css';
 
-function elementsFromData(data, threshold){
+export function elementsFromData(data, threshold){
   const filteredEdges = data.edges.filter(e=>e.weight>=threshold);
-  const nodes = data.nodes.map(n=>({ data:{ id:n.id, weight:n.weight}}));
-  const edges = filteredEdges.map(e=>({ data:{ id:`${e.source}-${e.target}`, source:e.source, target:e.target, weight:e.weight}}));
+  const connectedIds = new Set();
+  filteredEdges.forEach(e => {
+    connectedIds.add(e.source);
+    connectedIds.add(e.target);
+  });
+  const nodes = data.nodes
+    .filter(n => connectedIds.has(n.id))
+    .map(n => ({ data: { id: n.id, weight: n.weight } }));
+  const edges = filteredEdges.map(e => ({ data: { id: `${e.source}-${e.target}`, source: e.source, target: e.target, weight: e.weight } }));
   return [...nodes, ...edges];
 }
 
