@@ -11,7 +11,8 @@ function elementsFromData(data, threshold){
 
 export default function App(){
   const [threshold, setThreshold] = useState(0);
-  const [layout, setLayout] = useState('cose');
+  // default layout is grid so users immediately see a structured view
+  const [layout, setLayout] = useState('grid');
   const [data, setData] = useState({ nodes: [], edges: [] });
   const [tooltip, setTooltip] = useState(null);
   const cyRef = useRef(null);
