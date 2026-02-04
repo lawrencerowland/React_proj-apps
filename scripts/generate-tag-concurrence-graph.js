@@ -1,90 +1,122 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from 'fs';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = dirname(__dirname);
-
 const csvPath = join(root, 'app-index.csv');
 const outputDir = join(root, 'apps', 'tag-concurrence-explorer', 'public');
-const outputPath = join(outputDir, 'tag_concurrence_graph.json');
+const outputFile = join(outputDir, 'tag_concurrence_graph.json');
 
-function parseLine(line){
-  const result = [];
-  let cur = '';
+const csvText = readFileSync(csvPath, 'utf8');
+
+const parseCsvLine = (line) => {
+  const fields = [];
+  let current = '';
   let inQuotes = false;
-  for(let i=0;i<line.length;i++){
-    const ch = line[i];
-    if(ch==='"'){
-      if(inQuotes && line[i+1]==='"'){
-        cur += '"';
-        i++;
-      }else{
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+    if (char === '"') {
+      const nextChar = line[i + 1];
+      if (inQuotes && nextChar === '"') {
+        current += '"';
+        i += 1;
+      } else {
         inQuotes = !inQuotes;
       }
-    }else if(ch===',' && !inQuotes){
-      result.push(cur);
-      cur = '';
-    }else{
-      cur += ch;
+      continue;
     }
+
+    if (char === ',' && !inQuotes) {
+      fields.push(current.trim());
+      current = '';
+      continue;
+    }
+
+    current += char;
   }
-  result.push(cur);
-  return result;
+
+  fields.push(current.trim());
+  return fields.map((field) => field.replace(/^"|"$/g, ''));
+};
+
+const lines = csvText.split(/\r?\n/).filter((line) => line.trim().length > 0);
+if (lines.length === 0) {
+  console.warn('app-index.csv is empty.');
+  process.exit(0);
 }
 
-function parseCSV(text){
-  const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
-  if(!lines.length) return [];
-  const headers = parseLine(lines[0].replace(/^\uFEFF/, ''));
-  const records = [];
-  for(let i=1;i<lines.length;i++){
-    const fields = parseLine(lines[i]);
-    if(fields.length !== headers.length) continue;
-    const rec = {};
-    headers.forEach((h,idx)=>{
-      rec[h] = fields[idx].replace(/^"|"$/g, '');
-    });
-    records.push(rec);
-  }
-  return records;
+const header = parseCsvLine(lines[0]);
+const tagIndex = header.findIndex((column) => column.trim().toLowerCase() === 'tags');
+if (tagIndex === -1) {
+  console.warn('No tags column found in app-index.csv.');
+  process.exit(0);
 }
-
-const csvText = readFileSync(csvPath, 'utf-8');
-const records = parseCSV(csvText);
 
 const tagCount = new Map();
 const pairCount = new Map();
 
-for(const rec of records){
-  if(!rec.tags) continue;
-  const tags = rec.tags.split(',').map(t => t.trim()).filter(Boolean);
-  if(!tags.length) continue;
-  const unique = [...new Set(tags)];
-  for(const t of unique){
-    tagCount.set(t, (tagCount.get(t)||0)+1);
+for (const line of lines.slice(1)) {
+  const fields = parseCsvLine(line);
+  if (fields.length !== header.length) {
+    continue;
   }
-  unique.sort();
-  for(let i=0;i<unique.length;i++){
-    for(let j=i+1;j<unique.length;j++){
-      const key = `${unique[i]}|||${unique[j]}`;
-      pairCount.set(key, (pairCount.get(key)||0)+1);
+
+  const tagField = fields[tagIndex];
+  if (!tagField) {
+    continue;
+  }
+
+  const tags = tagField
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0);
+
+  if (tags.length === 0) {
+    continue;
+  }
+
+  const uniqueTags = Array.from(new Set(tags)).sort((a, b) => a.localeCompare(b));
+
+  for (const tag of uniqueTags) {
+    tagCount.set(tag, (tagCount.get(tag) ?? 0) + 1);
+  }
+
+  for (let i = 0; i < uniqueTags.length; i += 1) {
+    for (let j = i + 1; j < uniqueTags.length; j += 1) {
+      const key = `${uniqueTags[i]}||${uniqueTags[j]}`;
+      pairCount.set(key, (pairCount.get(key) ?? 0) + 1);
     }
   }
 }
 
-const nodes = [];
-for(const [tag,count] of tagCount){
-  nodes.push({ id: tag, weight: count });
-}
-const edges = [];
-for(const [key,count] of pairCount){
-  const [a,b] = key.split('|||');
-  edges.push({ source: a, target: b, weight: count });
+const nodes = Array.from(tagCount.entries())
+  .map(([tag, count]) => ({ id: tag, weight: count }))
+  .sort((a, b) => a.id.localeCompare(b.id));
+
+const edges = Array.from(pairCount.entries())
+  .map(([key, count]) => {
+    const [source, target] = key.split('||');
+    return { source, target, weight: count };
+  })
+  .sort((a, b) => {
+    const sourceCompare = a.source.localeCompare(b.source);
+    return sourceCompare !== 0 ? sourceCompare : a.target.localeCompare(b.target);
+  });
+
+const output = { nodes, edges };
+
+mkdirSync(outputDir, { recursive: true });
+writeFileSync(outputFile, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
+
+const docsTarget = join(root, 'docs', 'apps', 'tag-concurrence-explorer');
+if (existsSync(docsTarget)) {
+  mkdirSync(docsTarget, { recursive: true });
+  cpSync(outputFile, join(docsTarget, 'tag_concurrence_graph.json'));
 }
 
-const graph = { nodes, edges };
-mkdirSync(outputDir, { recursive: true });
-writeFileSync(outputPath, JSON.stringify(graph, null, 4), 'utf-8');
-console.log(`Generated ${outputPath} with ${nodes.length} nodes and ${edges.length} edges`);
+console.log(
+  `Generated ${outputFile} with ${nodes.length} nodes and ${edges.length} edges.`
+);
