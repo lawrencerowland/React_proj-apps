@@ -1,27 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import './App.css';
+
+const CATEGORIES = {
+  pmCore: { name: 'Project Management Core', color: '#287fbd' },
+  pcCore: { name: 'Project Controls Core', color: '#23865b' },
+  tools: { name: 'Tools & Techniques', color: '#c86412' },
+  methods: { name: 'Methodologies & Frameworks', color: '#7652b8' },
+  roles: { name: 'Roles & Responsibilities', color: '#c94747' },
+  docs: { name: 'Documents & Deliverables', color: '#a56f00' }
+};
+
+const CATEGORY_KEYS = Object.keys(CATEGORIES);
+
+const GUIDED_PATH = [
+  { id: 'projectManager', guidance: 'Begin with broad responsibility for the whole project and its outcomes.' },
+  { id: 'projectPlanning', guidance: 'Translate that responsibility into a coordinated plan and agreed basis for control.' },
+  { id: 'costBaseline', guidance: 'Establish the approved, time-phased budget that cost performance will be measured against.' },
+  { id: 'costControl', guidance: 'Monitor expenditure and protect the integrity of the approved cost baseline.' },
+  { id: 'performanceMeasurement', guidance: 'Bring actual progress and plan together to understand how the project is performing.' },
+  { id: 'earnedValueMgmt', guidance: 'Integrate scope, schedule and cost signals into a consistent performance view.' },
+  { id: 'forecastingReports', guidance: 'Turn current performance into an explicit view of likely future outcomes.' },
+  { id: 'projectController', guidance: 'Apply these connected practices as a specialist partner to project leadership.' }
+];
 
 const ProjectControlsKnowledgeGraph = () => {
-  const svgRef = useRef(null);
-  const simulationRef = useRef(null);
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [showPathTraversal, setShowPathTraversal] = useState(false);
-  const [highlightedPath, setHighlightedPath] = useState([]);
-  const [showAboutModal, setShowAboutModal] = useState(false);
-  const [showPathExplanationModal, setShowPathExplanationModal] = useState(false);
-
-  // Define node categories and their colors
-  const categories = {
-    pmCore: { name: "Project Management Core", color: "#4299E1" }, // Blue
-    pcCore: { name: "Project Controls Core", color: "#48BB78" },   // Green
-    tools: { name: "Tools & Techniques", color: "#ED8936" },       // Orange
-    methods: { name: "Methodologies & Frameworks", color: "#9F7AEA" }, // Purple
-    roles: { name: "Roles & Responsibilities", color: "#F56565" },  // Red
-    docs: { name: "Documents & Deliverables", color: "#ECC94B" }    // Yellow
-  };
-
   // Create graph data: nodes and links
-  const nodes = [
+  const nodes = useMemo(() => [
     // Project Management Core Concepts (Blue)
     { id: "projectInitiation", name: "Project Initiation", category: "pmCore", description: "Process of formally authorizing a new project or project phase" },
     { id: "projectPlanning", name: "Project Planning", category: "pmCore", description: "Defining project scope, objectives, and actions to achieve project goals" },
@@ -89,9 +94,9 @@ const ProjectControlsKnowledgeGraph = () => {
     { id: "performanceReports", name: "Performance Reports", category: "docs", description: "Documents presenting earned value metrics and performance analysis" },
     { id: "forecastingReports", name: "Forecasting Reports", category: "docs", description: "Documents with predictions of future project performance and completion" },
     { id: "lessonsLearned", name: "Lessons Learned", category: "docs", description: "Documentation of knowledge gained during the project for future reference" }
-  ];
+  ], []);
 
-  const links = [
+  const links = useMemo(() => [
     // Workflow links in Project Management
     { source: "projectInitiation", target: "projectPlanning", type: "workflow" },
     { source: "projectPlanning", target: "projectExecution", type: "workflow" },
@@ -159,389 +164,661 @@ const ProjectControlsKnowledgeGraph = () => {
     { source: "agile", target: "progressTracking", type: "adapts" },
     
     // Additional connections for transitions
-    { source: "projectManager", target: "projectController", type: "transitions" },
     { source: "costControl", target: "earnedValueMgmt", type: "utilizes" },
     { source: "scheduleControl", target: "earnedValueMgmt", type: "utilizes" },
     { source: "earnedValueMgmt", target: "forecasting", type: "enables" },
     { source: "controlAccounts", target: "earnedValueMgmt", type: "structures" }
-  ];
+  ], []);
 
-  // Define the main path from project management to project controls
-  const mainPath = [
-    "projectManager", "projectPlanning", "costBaseline", "costControl", 
-    "performanceMeasurement", "earnedValueMgmt", "forecastingReports", "projectController"
-  ];
+  const svgRef = useRef(null);
+  const graphHostRef = useRef(null);
+  const simulationRef = useRef(null);
+  const nodeSelectionRef = useRef(null);
+  const linkSelectionRef = useRef(null);
+  const pathSelectionRef = useRef(null);
+  const viewControlsRef = useRef({});
+  const closeAboutRef = useRef(null);
+  const aboutOpenerRef = useRef(null);
 
-  // We add nodeRef to store node elements for updating
-  const nodeRef = useRef(null);
-  
+  const [activeCategories, setActiveCategories] = useState(() => new Set(CATEGORY_KEYS));
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [showGuidedPath, setShowGuidedPath] = useState(false);
+  const [guidedStep, setGuidedStep] = useState(0);
+  const [showAbout, setShowAbout] = useState(false);
+  const [viewport, setViewport] = useState({ width: 960, height: 600 });
+  const [layoutVersion, setLayoutVersion] = useState(0);
+
+  const nodeById = useMemo(() => new Map(nodes.map(node => [node.id, node])), [nodes]);
+  const categoryCounts = useMemo(() => Object.fromEntries(
+    CATEGORY_KEYS.map(key => [key, nodes.filter(node => node.category === key).length])
+  ), [nodes]);
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const visibleNodes = useMemo(() => nodes.filter(node => {
+    if (!activeCategories.has(node.category)) return false;
+    if (!normalizedSearch) return true;
+    return `${node.name} ${node.description}`.toLowerCase().includes(normalizedSearch);
+  }), [activeCategories, nodes, normalizedSearch]);
+  const visibleNodeIds = useMemo(() => new Set(visibleNodes.map(node => node.id)), [visibleNodes]);
+  const visibleLinks = useMemo(() => links.filter(link => (
+    visibleNodeIds.has(link.source) && visibleNodeIds.has(link.target)
+  )), [links, visibleNodeIds]);
+  const selectedNode = selectedNodeId ? nodeById.get(selectedNodeId) : null;
+  const currentGuidedItem = GUIDED_PATH[guidedStep];
+  const currentGuidedNode = nodeById.get(currentGuidedItem.id);
+
+  const selectedRelationships = useMemo(() => {
+    if (!selectedNode) return [];
+    return links
+      .filter(link => link.source === selectedNode.id || link.target === selectedNode.id)
+      .map(link => {
+        const outgoing = link.source === selectedNode.id;
+        const otherNode = nodeById.get(outgoing ? link.target : link.source);
+        return { ...link, outgoing, otherNode };
+      })
+      .filter(relationship => relationship.otherNode);
+  }, [links, nodeById, selectedNode]);
+
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!selectedNodeId || visibleNodeIds.has(selectedNodeId)) return;
+    setSelectedNodeId(null);
+  }, [selectedNodeId, visibleNodeIds]);
 
-    // Only recreate the graph if it doesn't exist yet
-    if (!simulationRef.current) {
-      const width = 800;
-      const height = 600;
-      
-      // Clear any existing SVG content
-      d3.select(svgRef.current).selectAll("*").remove();
-      
-      const svg = d3.select(svgRef.current)
-        .attr("width", width)
-        .attr("height", height)
-        .attr("viewBox", [0, 0, width, height])
-        .attr("style", "max-width: 100%; height: auto;");
-      
-      // Create the container group
-      const g = svg.append("g");
-      
-      // Create zoom behavior
-      const zoom = d3.zoom()
-        .scaleExtent([0.1, 4])
-        .on("zoom", (event) => {
-          g.attr("transform", event.transform);
-        });
-      
-      svg.call(zoom);
-      
-      // Create the simulation and store in ref to maintain instance across renders
-      simulationRef.current = d3.forceSimulation(nodes)
-        .force("link", d3.forceLink(links).id(d => d.id).distance(100))
-        .force("charge", d3.forceManyBody().strength(-200))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collision", d3.forceCollide().radius(30));
-      
-      // Draw the links
-      const link = g.append("g")
-        .selectAll("line")
-        .data(links)
-        .join("line")
-        .attr("stroke", d => {
-          // Check if both source and target are in the highlighted path
-          if (highlightedPath.length === 0) return "#999";
-          
-          const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
-          const targetId = typeof d.target === 'object' ? d.target.id : d.target;
-          
-          if (highlightedPath.includes(sourceId) && highlightedPath.includes(targetId)) {
-            // Check if they are adjacent in the path
-            const sourceIndex = highlightedPath.indexOf(sourceId);
-            const targetIndex = highlightedPath.indexOf(targetId);
-            if (Math.abs(sourceIndex - targetIndex) === 1) {
-              return "#FF9500";
-            }
-          }
-          return "#999";
-        })
-        .attr("stroke-opacity", d => {
-          const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
-          const targetId = typeof d.target === 'object' ? d.target.id : d.target;
-          
-          if (highlightedPath.includes(sourceId) && highlightedPath.includes(targetId)) {
-            const sourceIndex = highlightedPath.indexOf(sourceId);
-            const targetIndex = highlightedPath.indexOf(targetId);
-            if (Math.abs(sourceIndex - targetIndex) === 1) {
-              return 1;
-            }
-          }
-          return 0.6;
-        })
-        .attr("stroke-width", d => {
-          const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
-          const targetId = typeof d.target === 'object' ? d.target.id : d.target;
-          
-          if (highlightedPath.includes(sourceId) && highlightedPath.includes(targetId)) {
-            const sourceIndex = highlightedPath.indexOf(sourceId);
-            const targetIndex = highlightedPath.indexOf(targetId);
-            if (Math.abs(sourceIndex - targetIndex) === 1) {
-              return 3;
-            }
-          }
-          return 1;
-        });
-      
-      // Create node groups and store reference
-      const node = g.append("g")
-        .selectAll("g")
-        .data(nodes)
-        .join("g")
-        .call(drag(simulationRef.current))
-        .on("click", (event, d) => {
-          event.stopPropagation();
-          setSelectedNode(d);
-        });
-        
-      // Store node selection in ref for later updates
-      nodeRef.current = node;
-      
-      // Add circles to nodes
-      node.append("circle")
-        .attr("r", 12)
-        .attr("fill", d => categories[d.category].color)
-        .attr("stroke", d => highlightedPath.includes(d.id) ? "#FF9500" : "#fff")
-        .attr("stroke-width", d => highlightedPath.includes(d.id) ? 3 : 1.5);
-      
-      // Add labels to nodes
-      node.append("text")
-        .attr("dx", 15)
-        .attr("dy", 4)
-        .text(d => d.name)
-        .attr("font-size", "10px")
-        .attr("pointer-events", "none");
-      
-      // Update positions on each tick
-      simulationRef.current.on("tick", () => {
-        link
-          .attr("x1", d => d.source.x)
-          .attr("y1", d => d.source.y)
-          .attr("x2", d => d.target.x)
-          .attr("y2", d => d.target.y);
-        
-        node.attr("transform", d => `translate(${d.x},${d.y})`);
-      });
-      
-      // Clear selected node when clicking on the background
-      svg.on("click", () => {
-        setSelectedNode(null);
-      });
-      
-      // Drag function for nodes
-      function drag(simulation) {
-        function dragstarted(event) {
-          if (!event.active) simulation.alphaTarget(0.3).restart();
-          event.subject.fx = event.subject.x;
-          event.subject.fy = event.subject.y;
-        }
-        
-        function dragged(event) {
-          event.subject.fx = event.x;
-          event.subject.fy = event.y;
-        }
-        
-        function dragended(event) {
-          if (!event.active) simulation.alphaTarget(0);
-          event.subject.fx = null;
-          event.subject.fy = null;
-        }
-        
-        return d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended);
-      }
-    } else {
-      // Just update visual elements for path highlighting without recreating the graph
-      
-      // Make sure node events are still active even on updates
-      if (nodeRef.current) {
-        nodeRef.current
-          .on("click", (event, d) => {
-            event.stopPropagation();
-            setSelectedNode(d);
-          });
-      }
-      
-      d3.select(svgRef.current)
-        .selectAll("circle")
-        .attr("stroke", d => highlightedPath.includes(d.id) ? "#FF9500" : "#fff")
-        .attr("stroke-width", d => highlightedPath.includes(d.id) ? 3 : 1.5);
-      
-      d3.select(svgRef.current)
-        .selectAll("line")
-        .attr("stroke", d => {
-          if (highlightedPath.length === 0) return "#999";
-          
-          const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
-          const targetId = typeof d.target === 'object' ? d.target.id : d.target;
-          
-          if (highlightedPath.includes(sourceId) && highlightedPath.includes(targetId)) {
-            const sourceIndex = highlightedPath.indexOf(sourceId);
-            const targetIndex = highlightedPath.indexOf(targetId);
-            if (Math.abs(sourceIndex - targetIndex) === 1) {
-              return "#FF9500";
-            }
-          }
-          return "#999";
-        })
-        .attr("stroke-opacity", d => {
-          const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
-          const targetId = typeof d.target === 'object' ? d.target.id : d.target;
-          
-          if (highlightedPath.includes(sourceId) && highlightedPath.includes(targetId)) {
-            const sourceIndex = highlightedPath.indexOf(sourceId);
-            const targetIndex = highlightedPath.indexOf(targetId);
-            if (Math.abs(sourceIndex - targetIndex) === 1) {
-              return 1;
-            }
-          }
-          return 0.6;
-        })
-        .attr("stroke-width", d => {
-          const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
-          const targetId = typeof d.target === 'object' ? d.target.id : d.target;
-          
-          if (highlightedPath.includes(sourceId) && highlightedPath.includes(targetId)) {
-            const sourceIndex = highlightedPath.indexOf(sourceId);
-            const targetIndex = highlightedPath.indexOf(targetId);
-            if (Math.abs(sourceIndex - targetIndex) === 1) {
-              return 3;
-            }
-          }
-          return 1;
-        });
-    }
-    
-    return () => {
-      if (simulationRef.current) {
-        simulationRef.current.stop();
-      }
+  useEffect(() => {
+    const host = graphHostRef.current;
+    if (!host) return undefined;
+
+    const updateSize = () => {
+      const width = Math.max(320, Math.round(host.clientWidth || 960));
+      const height = width < 680 ? 500 : Math.min(680, Math.max(560, Math.round(width * 0.62)));
+      setViewport(previous => (
+        previous.width === width && previous.height === height ? previous : { width, height }
+      ));
     };
-  }, [highlightedPath, selectedNode]); // Re-run when highlightedPath or selectedNode changes
 
-  const togglePathTraversal = () => {
-    if (showPathTraversal) {
-      setHighlightedPath([]);
-    } else {
-      setHighlightedPath(mainPath);
+    updateSize();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateSize);
+      return () => window.removeEventListener('resize', updateSize);
     }
-    setShowPathTraversal(!showPathTraversal);
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!svgRef.current || visibleNodes.length === 0) {
+      d3.select(svgRef.current).selectAll('*').remove();
+      viewControlsRef.current = {};
+      return undefined;
+    }
+
+    const { width, height } = viewport;
+    const svgElement = svgRef.current;
+    const svg = d3.select(svgElement);
+    svg.selectAll('*').remove();
+    svg
+      .attr('width', width)
+      .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet');
+
+    svg.append('title').attr('id', 'pc-kg-graph-title').text('Interactive project controls knowledge graph');
+    svg.append('desc').attr('id', 'pc-kg-graph-description').text(
+      'Use the category filters or search to narrow the graph. Select a node for its description and relationships.'
+    );
+
+    const defs = svg.append('defs');
+    defs.append('marker')
+      .attr('id', 'pc-kg-relationship-arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 22)
+      .attr('refY', 0)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', '#98a4b7');
+    defs.append('marker')
+      .attr('id', 'pc-kg-path-arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 24)
+      .attr('refY', 0)
+      .attr('markerWidth', 7)
+      .attr('markerHeight', 7)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', '#d76500');
+
+    const graphGroup = svg.append('g').attr('class', 'pc-kg__graph-group');
+    const zoom = d3.zoom()
+      .scaleExtent([0.35, 3])
+      .filter(event => {
+        if (event.type === 'wheel') return event.ctrlKey || event.metaKey;
+        return !event.button;
+      })
+      .on('zoom', event => graphGroup.attr('transform', event.transform));
+    svg.call(zoom).on('dblclick.zoom', null);
+
+    const graphNodes = visibleNodes.map(node => ({ ...node }));
+    const graphNodeById = new Map(graphNodes.map(node => [node.id, node]));
+    const graphLinks = visibleLinks.map(link => ({ ...link }));
+    const pathSegments = GUIDED_PATH.slice(0, -1)
+      .map((item, index) => ({
+        source: graphNodeById.get(item.id),
+        target: graphNodeById.get(GUIDED_PATH[index + 1].id),
+        order: index + 1
+      }))
+      .filter(segment => segment.source && segment.target);
+
+    const link = graphGroup.append('g')
+      .attr('class', 'pc-kg__links')
+      .selectAll('line')
+      .data(graphLinks)
+      .join('line')
+      .attr('class', 'pc-kg__link')
+      .attr('marker-end', 'url(#pc-kg-relationship-arrow)');
+    link.append('title').text(item => {
+      const source = nodeById.get(typeof item.source === 'string' ? item.source : item.source.id);
+      const target = nodeById.get(typeof item.target === 'string' ? item.target : item.target.id);
+      return `${source?.name || 'Concept'} ${formatRelationship(item.type)} ${target?.name || 'concept'}`;
+    });
+
+    const pathLink = graphGroup.append('g')
+      .attr('class', 'pc-kg__path-links')
+      .selectAll('line')
+      .data(pathSegments)
+      .join('line')
+      .attr('class', 'pc-kg__path-link')
+      .attr('marker-end', 'url(#pc-kg-path-arrow)')
+      .style('display', 'none');
+
+    const pathIndex = new Map(GUIDED_PATH.map((item, index) => [item.id, index + 1]));
+    const node = graphGroup.append('g')
+      .attr('class', 'pc-kg__nodes')
+      .selectAll('g')
+      .data(graphNodes, item => item.id)
+      .join('g')
+      .attr('class', 'pc-kg__node')
+      .attr('role', 'button')
+      .attr('tabindex', 0)
+      .attr('aria-label', item => `${item.name}. ${item.description}`)
+      .on('click', (event, item) => {
+        event.stopPropagation();
+        setShowGuidedPath(false);
+        setSelectedNodeId(item.id);
+      })
+      .on('keydown', (event, item) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        event.stopPropagation();
+        setShowGuidedPath(false);
+        setSelectedNodeId(item.id);
+      });
+
+    node.append('circle').attr('class', 'pc-kg__node-hit').attr('r', 24);
+    node.append('circle')
+      .attr('class', 'pc-kg__node-dot')
+      .attr('r', 11)
+      .attr('fill', item => CATEGORIES[item.category].color);
+    node.append('text')
+      .attr('class', 'pc-kg__node-label')
+      .attr('x', 16)
+      .attr('y', 4)
+      .text(item => item.name);
+
+    const stepBadge = node.filter(item => pathIndex.has(item.id))
+      .append('g')
+      .attr('class', 'pc-kg__step-badge')
+      .attr('transform', 'translate(-16,-17)');
+    stepBadge.append('circle').attr('r', 10);
+    stepBadge.append('text').attr('y', 3.5).text(item => pathIndex.get(item.id));
+
+    const updatePositions = () => {
+      link
+        .attr('x1', item => item.source.x)
+        .attr('y1', item => item.source.y)
+        .attr('x2', item => item.target.x)
+        .attr('y2', item => item.target.y);
+      pathLink
+        .attr('x1', item => item.source.x)
+        .attr('y1', item => item.source.y)
+        .attr('x2', item => item.target.x)
+        .attr('y2', item => item.target.y);
+      node.attr('transform', item => `translate(${item.x},${item.y})`);
+    };
+
+    const drag = d3.drag()
+      .on('start', event => {
+        event.sourceEvent?.stopPropagation();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+      })
+      .on('drag', event => {
+        event.subject.fx = Math.max(28, Math.min(width - 28, event.x));
+        event.subject.fy = Math.max(28, Math.min(height - 28, event.y));
+        event.subject.x = event.subject.fx;
+        event.subject.y = event.subject.fy;
+        updatePositions();
+      })
+      .on('end', () => node.classed('pc-kg__node--pinned', item => Number.isFinite(item.fx)));
+    node.call(drag);
+
+    const simulation = d3.forceSimulation(graphNodes)
+      .randomSource(d3.randomLcg(0.42))
+      .force('link', d3.forceLink(graphLinks).id(item => item.id).distance(96).strength(0.62))
+      .force('charge', d3.forceManyBody().strength(-230))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('x', d3.forceX(width / 2).strength(0.13))
+      .force('y', d3.forceY(height / 2).strength(0.12))
+      .force('collision', d3.forceCollide().radius(36).strength(0.92))
+      .stop();
+    simulationRef.current = simulation;
+    for (let index = 0; index < 300; index += 1) simulation.tick();
+    graphNodes.forEach(item => {
+      const labelAllowance = Math.min(210, Math.max(82, item.name.length * 6.5 + 28));
+      item.x = Math.max(34, Math.min(width - labelAllowance, item.x));
+      item.y = Math.max(34, Math.min(height - 34, item.y));
+    });
+    updatePositions();
+
+    const transformForNodes = (targetNodes, maxScale = 1.35) => {
+      if (targetNodes.length === 0) return d3.zoomIdentity;
+      const minX = d3.min(targetNodes, item => item.x - 28);
+      const minY = d3.min(targetNodes, item => item.y - 28);
+      const maxX = d3.max(targetNodes, item => item.x + Math.max(48, item.name.length * 6.5 + 24));
+      const maxY = d3.max(targetNodes, item => item.y + 28);
+      const contentWidth = Math.max(1, maxX - minX);
+      const contentHeight = Math.max(1, maxY - minY);
+      const scale = Math.max(0.35, Math.min(maxScale, 0.88 * Math.min(width / contentWidth, height / contentHeight)));
+      const centerX = minX + contentWidth / 2;
+      const centerY = minY + contentHeight / 2;
+      return d3.zoomIdentity
+        .translate(width / 2 - scale * centerX, height / 2 - scale * centerY)
+        .scale(scale);
+    };
+
+    const fit = () => svg.call(zoom.transform, transformForNodes(graphNodes));
+    const focusNode = nodeId => {
+      const target = graphNodeById.get(nodeId);
+      if (!target) return;
+      const scale = 1.55;
+      svg.call(
+        zoom.transform,
+        d3.zoomIdentity.translate(width / 2 - scale * target.x, height / 2 - scale * target.y).scale(scale)
+      );
+      node.filter(item => item.id === nodeId).node()?.focus();
+    };
+
+    viewControlsRef.current = {
+      fit,
+      focusNode,
+      reset: () => setLayoutVersion(version => version + 1),
+      zoomIn: () => svg.call(zoom.scaleBy, 1.25),
+      zoomOut: () => svg.call(zoom.scaleBy, 0.8)
+    };
+    nodeSelectionRef.current = node;
+    linkSelectionRef.current = link;
+    pathSelectionRef.current = pathLink;
+    fit();
+
+    svg.on('click', event => {
+      if (event.target === svgElement) setSelectedNodeId(null);
+    });
+
+    return () => {
+      simulation.stop();
+      simulationRef.current = null;
+      nodeSelectionRef.current = null;
+      linkSelectionRef.current = null;
+      pathSelectionRef.current = null;
+      viewControlsRef.current = {};
+      svg.on('.zoom', null).on('click', null);
+    };
+  }, [layoutVersion, nodeById, viewport, visibleLinks, visibleNodes]);
+
+  useEffect(() => {
+    const guidedIds = new Set(GUIDED_PATH.map(item => item.id));
+    nodeSelectionRef.current
+      ?.classed('pc-kg__node--selected', item => item.id === selectedNodeId)
+      .classed('pc-kg__node--path', item => showGuidedPath && guidedIds.has(item.id))
+      .classed('pc-kg__node--current', item => showGuidedPath && item.id === currentGuidedItem.id)
+      .classed('pc-kg__node--muted', item => showGuidedPath && !guidedIds.has(item.id));
+    linkSelectionRef.current?.classed('pc-kg__link--muted', showGuidedPath);
+    pathSelectionRef.current?.style('display', showGuidedPath ? null : 'none');
+    if (showGuidedPath) viewControlsRef.current.focusNode?.(currentGuidedItem.id);
+  }, [currentGuidedItem.id, guidedStep, selectedNodeId, showGuidedPath, visibleNodes]);
+
+  useEffect(() => {
+    if (!showAbout) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeAboutRef.current?.focus();
+    const closeOnEscape = event => {
+      if (event.key === 'Escape') setShowAbout(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape);
+      document.body.style.overflow = previousOverflow;
+      aboutOpenerRef.current?.focus();
+    };
+  }, [showAbout]);
+
+  const toggleCategory = useCallback(categoryKey => {
+    setShowGuidedPath(false);
+    setActiveCategories(current => {
+      const next = new Set(current);
+      if (next.has(categoryKey)) next.delete(categoryKey);
+      else next.add(categoryKey);
+      return next;
+    });
+  }, []);
+
+  const startGuidedPath = () => {
+    setActiveCategories(new Set(CATEGORY_KEYS));
+    setSearchTerm('');
+    setSelectedNodeId(null);
+    setGuidedStep(0);
+    setShowGuidedPath(true);
   };
 
-  // Modal components
-  const AboutModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
-        <h3 className="text-xl font-bold mb-3">About This Knowledge Graph</h3>
-        <p className="mb-4">
-          This knowledge graph is designed as a visual learning tool for professionals transitioning from project management to project controls. It maps out the key concepts, relationships, tools, and methodologies that connect these two disciplines.
-        </p>
-        <p className="mb-4">
-          The graph is organized by color-coded categories:
-        </p>
-        <ul className="list-disc ml-5 mt-2 mb-4">
-          <li><span className="font-semibold text-blue-600">Blue nodes</span>: Core project management concepts</li>
-          <li><span className="font-semibold text-green-600">Green nodes</span>: Core project controls concepts</li>
-          <li><span className="font-semibold text-orange-500">Orange nodes</span>: Tools and techniques</li>
-          <li><span className="font-semibold text-purple-600">Purple nodes</span>: Methodologies and frameworks</li>
-          <li><span className="font-semibold text-red-600">Red nodes</span>: Roles and responsibilities</li>
-          <li><span className="font-semibold text-yellow-500">Yellow nodes</span>: Documents and deliverables</li>
-        </ul>
-        <p className="mb-4">
-          To use this tool effectively:
-        </p>
-        <ul className="list-disc ml-5 mt-2 mb-4">
-          <li>Click on nodes to view explanations of key concepts</li>
-          <li>Explore connections between different areas</li>
-          <li>Follow the PM to PC path to understand a logical learning progression</li>
-          <li>Identify which tools and methodologies support specific control processes</li>
-        </ul>
-        <button 
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          onClick={() => setShowAboutModal(false)}
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  );
+  const selectNode = nodeId => {
+    setShowGuidedPath(false);
+    setSelectedNodeId(nodeId);
+    viewControlsRef.current.focusNode?.(nodeId);
+  };
 
-  const PathExplanationModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
-        <h3 className="text-xl font-bold mb-3">Understanding the PM to PC Path</h3>
-        <p className="mb-4">
-          The highlighted path shows a logical progression for professionals transitioning from project management to project controls. It illustrates how knowledge and skills build upon each other.
-        </p>
-        <p className="mb-4">
-          <span className="font-semibold">The path follows these key steps:</span>
-        </p>
-        <ol className="list-decimal ml-5 mt-2 mb-4">
-          <li><span className="font-semibold">Project Manager Role</span>: Starting point with broad oversight of all project aspects</li>
-          <li><span className="font-semibold">Project Planning</span>: The foundation where all baselines are established</li>
-          <li><span className="font-semibold">Cost Baseline</span>: The approved budget that enables cost control</li>
-          <li><span className="font-semibold">Cost Control</span>: Monitoring expenditures against the baseline</li>
-          <li><span className="font-semibold">Performance Measurement</span>: Analyzing variance between planned and actual results</li>
-          <li><span className="font-semibold">Earned Value Management</span>: The key methodology that integrates scope, schedule, and cost</li>
-          <li><span className="font-semibold">Forecasting Reports</span>: Forward-looking projections based on current performance</li>
-          <li><span className="font-semibold">Project Controller</span>: The specialized role that masters these techniques</li>
-        </ol>
-        <p className="mb-4">
-          This path highlights the shift from planning-focused activities to measurement, analysis, and prediction. Project managers typically focus on delivering against the plan, while project controllers excel at measuring performance, spotting variances, and forecasting outcomes.
-        </p>
-        <button 
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          onClick={() => setShowPathExplanationModal(false)}
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  );
+  const moveGuidedPath = direction => {
+    const nextStep = guidedStep + direction;
+    if (nextStep >= GUIDED_PATH.length) {
+      setShowGuidedPath(false);
+      return;
+    }
+    setGuidedStep(Math.max(0, nextStep));
+  };
+
+  const formatCategorySummary = () => {
+    if (activeCategories.size === CATEGORY_KEYS.length) return 'all categories';
+    if (activeCategories.size === 0) return 'no categories';
+    return `${activeCategories.size} categories`;
+  };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Project Controls Knowledge Graph</h2>
-      
-      <div className="flex justify-between w-full mb-4">
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(categories).map(([key, category]) => (
-            <div key={key} className="flex items-center">
-              <span 
-                className="inline-block w-3 h-3 mr-1 rounded-full" 
-                style={{ backgroundColor: category.color }}
-              ></span>
-              <span className="text-xs">{category.name}</span>
-            </div>
-          ))}
+    <main className="pc-kg">
+      <header className="pc-kg__header">
+        <div>
+          <p className="pc-kg__eyebrow">Interactive learning map</p>
+          <h1>Project Controls Knowledge Graph</h1>
+          <p className="pc-kg__lede">
+            Explore how project-management responsibilities connect to controls, methods, roles and evidence.
+          </p>
         </div>
-        
-        <div className="flex gap-2">
-          <button
-            className="px-3 py-1 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
-            onClick={() => setShowAboutModal(true)}
-          >
-            About This Graph
+        <div className="pc-kg__header-actions">
+          <a className="pc-kg__link-button" href="../../index.html">Back to app index</a>
+          <button ref={aboutOpenerRef} className="pc-kg__button pc-kg__button--secondary" onClick={() => setShowAbout(true)}>
+            About this graph
           </button>
-          
           <button
-            className="px-3 py-1 text-sm rounded-md bg-purple-600 text-white hover:bg-purple-700"
-            onClick={() => setShowPathExplanationModal(true)}
+            className={`pc-kg__button ${showGuidedPath ? 'pc-kg__button--active' : 'pc-kg__button--primary'}`}
+            aria-pressed={showGuidedPath}
+            onClick={showGuidedPath ? () => setShowGuidedPath(false) : startGuidedPath}
           >
-            Explain PM to PC Path
-          </button>
-          
-          <button
-            className={`px-3 py-1 text-sm rounded-md ${
-              showPathTraversal 
-                ? "bg-orange-500 text-white hover:bg-orange-600" 
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-            }`}
-            onClick={togglePathTraversal}
-          >
-            {showPathTraversal ? "Hide Path" : "Show PM to PC Path"}
+            {showGuidedPath ? 'Exit guided path' : 'Start PM → PC path'}
           </button>
         </div>
-      </div>
-      
-      <div className="relative w-full border rounded-lg overflow-hidden bg-gray-50">
-        <svg ref={svgRef} width="100%" height="600" />
-        
-        {selectedNode && (
-          <div className="absolute bottom-4 left-4 right-4 bg-white p-4 rounded-md shadow-lg border">
-            <h3 className="text-lg font-semibold">{selectedNode.name}</h3>
-            <p className="text-sm text-gray-600">{selectedNode.description}</p>
+      </header>
+
+      <section className="pc-kg__toolbar" aria-label="Graph filters">
+        <div className="pc-kg__search">
+          <label htmlFor="pc-kg-search">Find a concept</label>
+          <input
+            id="pc-kg-search"
+            type="search"
+            value={searchTerm}
+            placeholder="Try forecasting or risk…"
+            onChange={event => {
+              setShowGuidedPath(false);
+              setSearchTerm(event.target.value);
+            }}
+          />
+        </div>
+
+        <fieldset className="pc-kg__filters">
+          <legend>Show categories</legend>
+          <div className="pc-kg__chips">
+            {CATEGORY_KEYS.map(categoryKey => {
+              const category = CATEGORIES[categoryKey];
+              const active = activeCategories.has(categoryKey);
+              return (
+                <button
+                  key={categoryKey}
+                  type="button"
+                  className="pc-kg__chip"
+                  style={{ '--chip-color': category.color }}
+                  aria-pressed={active}
+                  onClick={() => toggleCategory(categoryKey)}
+                >
+                  <span className="pc-kg__chip-dot" aria-hidden="true" />
+                  <span>{category.name}</span>
+                  <span className="pc-kg__chip-count" aria-label={`${categoryCounts[categoryKey]} concepts`}>
+                    {categoryCounts[categoryKey]}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-        )}
+          <div className="pc-kg__filter-actions">
+            <button
+              type="button"
+              className="pc-kg__text-button"
+              disabled={activeCategories.size === CATEGORY_KEYS.length}
+              onClick={() => setActiveCategories(new Set(CATEGORY_KEYS))}
+            >
+              Show all
+            </button>
+            <button
+              type="button"
+              className="pc-kg__text-button"
+              disabled={activeCategories.size === 0}
+              onClick={() => {
+                setShowGuidedPath(false);
+                setActiveCategories(new Set());
+              }}
+            >
+              Clear
+            </button>
+          </div>
+        </fieldset>
+      </section>
+
+      <p className="pc-kg__summary" aria-live="polite">
+        Showing {visibleNodes.length} of {nodes.length} concepts across {formatCategorySummary()}
+        {normalizedSearch ? ` matching “${searchTerm.trim()}”` : ''}.
+      </p>
+
+      <div className="pc-kg__workspace">
+        <section className="pc-kg__graph-panel" aria-labelledby="pc-kg-graph-heading">
+          <div className="pc-kg__graph-header">
+            <div>
+              <h2 id="pc-kg-graph-heading">Concept map</h2>
+              <p>Grey arrows are recorded relationships. The orange route is a teaching sequence.</p>
+            </div>
+            <div className="pc-kg__graph-controls" aria-label="Graph view controls">
+              <button type="button" aria-label="Zoom out" disabled={!visibleNodes.length} onClick={() => viewControlsRef.current.zoomOut?.()}>−</button>
+              <button type="button" aria-label="Zoom in" disabled={!visibleNodes.length} onClick={() => viewControlsRef.current.zoomIn?.()}>+</button>
+              <button type="button" disabled={!visibleNodes.length} onClick={() => viewControlsRef.current.fit?.()}>Fit graph</button>
+              <button type="button" disabled={!visibleNodes.length} onClick={() => viewControlsRef.current.reset?.()}>Reset layout</button>
+            </div>
+          </div>
+
+          <div ref={graphHostRef} className="pc-kg__canvas-wrap" style={{ height: viewport.height }}>
+            <svg
+              ref={svgRef}
+              className="pc-kg__canvas"
+              role="group"
+              aria-labelledby="pc-kg-graph-title pc-kg-graph-description"
+            />
+            {visibleNodes.length === 0 && (
+              <div className="pc-kg__empty">
+                <strong>No concepts match this view.</strong>
+                <span>Show a category or clear the search to bring concepts back.</span>
+              </div>
+            )}
+          </div>
+          <p className="pc-kg__graph-help">
+            Select a node or its label for details. Drag to pin a node. Pan by dragging the background; pinch or hold Command/Ctrl while scrolling to zoom.
+          </p>
+        </section>
+
+        <aside className="pc-kg__inspector" aria-label="Concept details">
+          {showGuidedPath ? (
+            <GuidedPathInspector
+              currentNode={currentGuidedNode}
+              currentItem={currentGuidedItem}
+              guidedStep={guidedStep}
+              nodeById={nodeById}
+              onChooseStep={setGuidedStep}
+              onMove={moveGuidedPath}
+              onExit={() => setShowGuidedPath(false)}
+            />
+          ) : selectedNode ? (
+            <NodeInspector
+              node={selectedNode}
+              relationships={selectedRelationships}
+              onClose={() => setSelectedNodeId(null)}
+              onSelectNode={selectNode}
+            />
+          ) : (
+            <ConceptBrowser nodes={visibleNodes} onSelectNode={selectNode} />
+          )}
+        </aside>
       </div>
-      
-      <div className="mt-4 text-sm text-gray-600">
-        <p>Click on nodes to view descriptions. Drag nodes to reposition. Use mouse wheel to zoom in/out.</p>
-      </div>
-      
-      {showAboutModal && <AboutModal />}
-      {showPathExplanationModal && <PathExplanationModal />}
+
+      {showAbout && (
+        <div
+          className="pc-kg__modal-backdrop"
+          onMouseDown={event => {
+            if (event.target === event.currentTarget) setShowAbout(false);
+          }}
+        >
+          <section
+            className="pc-kg__modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pc-kg-about-title"
+          >
+            <div className="pc-kg__modal-header">
+              <div>
+                <p className="pc-kg__eyebrow">How to use it</p>
+                <h2 id="pc-kg-about-title">About this knowledge graph</h2>
+              </div>
+              <button ref={closeAboutRef} type="button" className="pc-kg__icon-button" aria-label="Close About" onClick={() => setShowAbout(false)}>×</button>
+            </div>
+            <p>
+              This is a learning map for people moving between project management and project controls. Filter by category, search for a concept, then use the inspector to read its recorded relationships.
+            </p>
+            <ul className="pc-kg__about-list">
+              <li>The category chips genuinely add and remove concepts and their incident relationships.</li>
+              <li>The guided PM → PC route is an explicit teaching sequence, shown separately from the grey knowledge-graph relationships.</li>
+              <li>All concepts are also available in the keyboard-friendly Browse concepts list.</li>
+              <li>Fit graph restores the current view; Reset layout also removes manual node positioning.</li>
+            </ul>
+            <button type="button" className="pc-kg__button pc-kg__button--primary" onClick={() => setShowAbout(false)}>Close</button>
+          </section>
+        </div>
+      )}
+    </main>
+  );
+};
+
+const formatRelationship = type => type.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+
+const ConceptBrowser = ({ nodes, onSelectNode }) => {
+  const sortedNodes = [...nodes].sort((left, right) => left.name.localeCompare(right.name));
+  return (
+    <div>
+      <p className="pc-kg__eyebrow">Keyboard-friendly view</p>
+      <h2>Browse concepts</h2>
+      <p className="pc-kg__inspector-copy">Choose a concept to see what it means and how it connects.</p>
+      {sortedNodes.length ? (
+        <ul className="pc-kg__concept-list">
+          {sortedNodes.map(node => (
+            <li key={node.id}>
+              <button type="button" onClick={() => onSelectNode(node.id)}>
+                <span className="pc-kg__list-dot" style={{ backgroundColor: CATEGORIES[node.category].color }} aria-hidden="true" />
+                <span>{node.name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="pc-kg__quiet">No concepts are available in the current filter.</p>
+      )}
     </div>
   );
 };
+
+const NodeInspector = ({ node, relationships, onClose, onSelectNode }) => (
+  <div>
+    <div className="pc-kg__inspector-heading">
+      <div>
+        <p className="pc-kg__eyebrow">{CATEGORIES[node.category].name}</p>
+        <h2>{node.name}</h2>
+      </div>
+      <button type="button" className="pc-kg__icon-button" aria-label="Close concept details" onClick={onClose}>×</button>
+    </div>
+    <p className="pc-kg__inspector-copy">{node.description}</p>
+    <h3>Recorded relationships</h3>
+    {relationships.length ? (
+      <ul className="pc-kg__relationship-list">
+        {relationships.map((relationship, index) => (
+          <li key={`${relationship.source}-${relationship.target}-${relationship.type}-${index}`}>
+            <span className="pc-kg__relationship-type">{formatRelationship(relationship.type)}</span>
+            <span aria-hidden="true">{relationship.outgoing ? '→' : '←'}</span>
+            <button type="button" onClick={() => onSelectNode(relationship.otherNode.id)}>{relationship.otherNode.name}</button>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p className="pc-kg__quiet">No relationships have yet been recorded for this concept.</p>
+    )}
+  </div>
+);
+
+const GuidedPathInspector = ({ currentNode, currentItem, guidedStep, nodeById, onChooseStep, onMove, onExit }) => (
+  <div>
+    <p className="pc-kg__eyebrow">Guided PM → PC path</p>
+    <p className="pc-kg__step-count">Step {guidedStep + 1} of {GUIDED_PATH.length}</p>
+    <h2>{currentNode.name}</h2>
+    <p className="pc-kg__inspector-copy">{currentNode.description}</p>
+    <p className="pc-kg__guidance">{currentItem.guidance}</p>
+    <div className="pc-kg__path-actions">
+      <button type="button" disabled={guidedStep === 0} onClick={() => onMove(-1)}>Previous</button>
+      <button type="button" className="pc-kg__button--primary" onClick={() => onMove(1)}>
+        {guidedStep === GUIDED_PATH.length - 1 ? 'Finish path' : 'Next step'}
+      </button>
+    </div>
+    <ol className="pc-kg__path-list" aria-label="Guided path steps">
+      {GUIDED_PATH.map((item, index) => (
+        <li key={item.id}>
+          <button
+            type="button"
+            aria-current={index === guidedStep ? 'step' : undefined}
+            onClick={() => onChooseStep(index)}
+          >
+            <span>{index + 1}</span>
+            {nodeById.get(item.id).name}
+          </button>
+        </li>
+      ))}
+    </ol>
+    <p className="pc-kg__quiet">Orange links show this teaching sequence; they do not assert additional knowledge-graph relationships.</p>
+    <button type="button" className="pc-kg__text-button" onClick={onExit}>Exit guided path</button>
+  </div>
+);
 
 export default ProjectControlsKnowledgeGraph;
