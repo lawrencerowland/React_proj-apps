@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readdirSync, statSync, cpSync, mkdirSync, renameSync } from 'fs';
+import { readdirSync, statSync, cpSync, mkdirSync, renameSync, existsSync, rmSync } from 'fs';
 import { join, dirname } from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
@@ -17,7 +17,14 @@ const apps = readdirSync(appsDir).filter(app =>
 
 for (const app of apps) {
   console.log(`Building ${app}...`);
-  execSync('vite build', { stdio: 'inherit', cwd: root, env: { ...process.env, APP: app } });
+  const appPath = join(appsDir, app);
+  if (existsSync(join(appPath, 'src'))) {
+    execSync('vite build', { stdio: 'inherit', cwd: root, env: { ...process.env, APP: app } });
+  } else {
+    const target = join(docsDir, 'apps', app);
+    rmSync(target, {recursive: true, force: true});
+    cpSync(appPath, target, {recursive: true});
+  }
 }
 
 cpSync(join(root, 'index.html'), join(docsDir, 'index.html'));

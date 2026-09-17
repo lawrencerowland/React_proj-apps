@@ -48,10 +48,6 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 
 **Navigation**: Every app should offer a link back to the card index so users can return easily. Add `<a href="../../index.html">Back to app index</a>` somewhere in each application's `index.html`.
 
-### IT Project Sequential Decisions
-- Located in `apps/IT-project-seq-decisions/src/App.jsx` and bootstrapped by `apps/IT-project-seq-decisions/src/index.jsx`.
-- Six-step tutorial for an illustrative IT project: narrative, model, uncertainty, policies and a proposed evaluation workflow. It does not execute a simulation or optimisation.
-- Run locally with `APP=IT-project-seq-decisions npm start`.
 ### Portfolio State Machine
 - Located in `apps/portfolio-state-machine/src/App.jsx` and bootstrapped by `apps/portfolio-state-machine/src/index.jsx`.
 - Manages a portfolio of projects using a state machine and includes a simulation mode.
@@ -84,14 +80,6 @@ Each row of `app-index.csv` includes a `#` column. The number in this column cor
 - Run locally with `APP=building-site-occupancy-simulation npm start`.
 
 
-### Weekly IT Project Game
-- Located in `apps/Another-IT-project-simulation/`; pure decision rules are in `src/model.js`.
-- Validates finite integer choices, staffing totals and affordable payroll before drawing weekly information. New hires work immediately; hiring costs apply once and all retained staff are paid.
-- Ends on feature completion, the 12-week horizon or inability to fund another payroll. Quality and satisfaction remain separate bounded outcomes. Reset clears the run; a chart and table retain its weekly decisions and results while playing.
-- The numbers and random distributions are illustrative. See `REPAIRS.md` for checks and scope.
+## Specialist migrations
 
-### Tag Concurrence Explorer
-- Maps the tags in this repository's `app-index.csv`; this is an app-catalogue projection, not a source-reading graph or detected communities.
-- Maintains filtering, Grid/Concentric/Cose layouts, tag inspection and PNG export. Node size represents the number of apps carrying each tag.
-- `node scripts/generate-tag-concurrence-graph.js` refreshes graph JSON and `tag_concurrence_metadata.json`, including the source checksum, app names and refresh time. The existing postbuild invokes it and copies both into ignored `docs/` output.
-- Run all repository tests with `node node_modules/vitest/vitest.mjs run --root .`; the default Vite app root otherwise limits test discovery.
+`apps/Another-IT-project-simulation/`, `apps/IT-project-seq-decisions/` and `apps/tag-concurrence-explorer/` now hold static redirects only. Their maintained implementations, model tests and graph data generator moved to the named specialist repositories in MOVED-APPS.md. The build copies these redirect directories and removes old generated assets at those paths. Do not recreate a second implementation here. The remaining catalogue contains 16 apps; the specialist tag map retains its explicitly dated 19-app source snapshot.

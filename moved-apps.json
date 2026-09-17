@@ -1,0 +1,23 @@
+[
+  {
+    "name": "IT-project-seq-decisions",
+    "source_repository": "React_proj-apps",
+    "old_path": "apps/IT-project-seq-decisions/index.html",
+    "destination": "https://lawrencerowland.github.io/Programme-decision-sequences/apps/it-decision-tutorial/",
+    "home": "Programme Decision Sequences"
+  },
+  {
+    "name": "Another-IT-project-simulation",
+    "source_repository": "React_proj-apps",
+    "old_path": "apps/Another-IT-project-simulation/index.html",
+    "destination": "https://lawrencerowland.github.io/Programme-decision-sequences/apps/weekly-it-project-game/",
+    "home": "Programme Decision Sequences"
+  },
+  {
+    "name": "tag-concurrence-explorer",
+    "source_repository": "React_proj-apps",
+    "old_path": "apps/tag-concurrence-explorer/index.html",
+    "destination": "https://lawrencerowland.github.io/Tag_Concurrence_Graph/app_catalogue.html",
+    "home": "Tag Concurrence Graph"
+  }
+]
